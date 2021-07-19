@@ -59,11 +59,12 @@ public class MapGenerator : MonoBehaviour
         return result;
     }
 
-    public void SetFlagMap(bool[,] unassessableFlag){
+    public void SetFlagMap(Coord startPoint, bool[,] unassessableFlag){
         // 방의 형태 결정
         // wholeMapSize의 x2 + 1짜리 공간 생성
         int unassessableTile = 0;
 
+        Coord StartRoomPoint = startPoint * 2 + Coord.one;
         Queue<Coord> way = new Queue<Coord>();
 
         // 전부 뚫린 형태로 일단 생성하고 
@@ -84,14 +85,14 @@ public class MapGenerator : MonoBehaviour
         }
 
         int time = 0;
-        // 랜덤으로 타일을 순서대로 뽑아서 길박는 걸 실행
+        // 랜덤으로 타일을 순서대로 뽑아서 길 막는 걸 실행
         Queue<Coord> shuffledWay = new Queue<Coord>(MapUtility.ShuffleArr<Coord>(way.ToArray(), seed));
-        int numOfway = (int)(shuffledWay.Count * ClosureRate);
-        for(int i = 0; i < numOfway; ++i){
+        int numOfClosedWay = (int)(shuffledWay.Count * ClosureRate);
+        for(int i = 0; i < numOfClosedWay; ++i){
             Coord randomeWayCoord = shuffledWay.Dequeue();
             unassessableFlag[randomeWayCoord.x, randomeWayCoord.y] = true;
             unassessableTile++;
-            // 길이 막힌 것으로 인해 인접한 2방의 4면을 모두 막힌 건지 확인
+            // 길이 막힌 것으로 인해 인접한 2방의 4면을 모두 막힌 건지 확인해서 그것도 막힌 것으로 처리
             // x짝수, y홀수 = 수평 이동길 // x홀수, y짝수 = 수직 이동길
             if(randomeWayCoord.x % 2 == 0) { // 수평
                 if(ClosedMap(unassessableFlag, randomeWayCoord.x - 1, randomeWayCoord.y)){
@@ -112,7 +113,8 @@ public class MapGenerator : MonoBehaviour
                     unassessableTile++;
                 }
             }
-            if(!MapIsFullyAccessible(unassessableFlag, unassessableTile, MapCenter * 2 + new Vector2Int(1, 1))){
+            if(!MapIsFullyAccessible(unassessableFlag, unassessableTile, StartRoomPoint)){
+                // 만약 모든 타일에 접근 불가능한 경우 원상복귀
                 if(randomeWayCoord.x % 2 == 0) { // 수평
                     if(ClosedMap(unassessableFlag, randomeWayCoord.x - 1, randomeWayCoord.y)){
                         unassessableFlag[randomeWayCoord.x - 1, randomeWayCoord.y] = false;
@@ -140,8 +142,8 @@ public class MapGenerator : MonoBehaviour
             }else{
                 time = 0;
             }
-            if(time == numOfway){
-                i = numOfway;
+            if(time == numOfClosedWay){
+                i = numOfClosedWay;
             }
          }
     }
@@ -217,16 +219,20 @@ public class MapGenerator : MonoBehaviour
         // 방 담을 공간 및 방의 개수  : 복도의 개수
         Room[,] roomMap = new Room[wholeMapSize.x, wholeMapSize.y];
         int NumOfRoom = (int)(RateOfRoom * wholeMapSize.x * wholeMapSize.y);
+        NumOfRoom = NumOfRoom > 1 ? NumOfRoom : 2;
+
+        // 시작 위치 결정 랜덤한 위치 하나 골라서 
+        Coord StartPoint = GetRandomCoord(); 
 
         // 방의 형태 결정
         // wholeMapSize의 x2 + 1짜리 공간 생성
         bool[,] unassessableFlag = new bool[wholeMapSize.x * 2 + 1, wholeMapSize.y * 2 + 1];;
-        SetFlagMap(unassessableFlag);
+        SetFlagMap(StartPoint, unassessableFlag);
 
+        GameManager gm = transform.GetComponent<GameManager>();
 
         // 방의 형태 기반으로 3칸씩 읽어서 구현
         // 시작 위치 결정 랜덤한 위치 하나 골라서 
-        Coord StartPoint = GetRandomCoord(); 
         if(NumOfRoom > 0){
             NumOfRoom--;
             Coord randomCoord = StartPoint; 
@@ -242,6 +248,7 @@ public class MapGenerator : MonoBehaviour
                 !unassessableFlag[wayCenter.x, wayCenter.y - 1]);
             roomMap[randomCoord.x, randomCoord.y].transform.parent = MapHolder.transform;
             roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y) + "_Start";
+            gm.StartPoint = roomMap[randomCoord.x, randomCoord.y].transform;
         }
         // 목표 방 위치 결정 가장 깊은 방으로 설정함
         if(NumOfRoom > 0){
@@ -259,6 +266,7 @@ public class MapGenerator : MonoBehaviour
                 !unassessableFlag[wayCenter.x, wayCenter.y - 1]);
             roomMap[randomCoord.x, randomCoord.y].transform.parent = MapHolder.transform;
             roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y) + "_Goal";
+            gm.GoalPoint = roomMap[randomCoord.x, randomCoord.y].transform;
         }
 
 
@@ -334,8 +342,11 @@ public class MapGenerator : MonoBehaviour
     bool MapIsFullyAccessible(bool[,] obstacleMap, int currentObstacleCount, Coord Start)
     {
         bool[,] mapFlag = new bool[obstacleMap.GetLength(0), obstacleMap.GetLength(1)];
-
-        //
+        // 시작 지점이 막혔는지 확인
+        if(obstacleMap[Start.x, Start.y]){
+            return false;
+        }
+        // 시작 지점을 기점으로 주변을 확인
         Queue<Coord> queue = new Queue<Coord>();
         queue.Enqueue(Start);
         mapFlag[Start.x, Start.y] = true;

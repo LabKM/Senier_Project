@@ -11,22 +11,24 @@ public class LiftableObject : MonoBehaviour, ILiftable
     BeanController lifter;
     bool onHand;
     List<BoxCollider> colliders;
+    private Transform original_parent;
 
     public void LeftShift(Transform _transform)
-    {
-        Vector3 offset = transform.position - liftedPoint.position;
-        transform.position = _transform.position + offset;
+    { 
         onHand = !onHand;
         if (onHand)
         {   
             PhysicsOff();
+            original_parent = transform.parent;
             transform.parent = _transform;
         }
         else
         {   
             PhysicsOn();
-            transform.parent = null;
+            transform.parent = original_parent;
         }
+        Vector3 offset = transform.position - liftedPoint.position;
+        transform.position = _transform.position + offset;
     }
 
     private void OnTriggerEnter(Collider other)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bean : LivingEntity
 {
-    Behavior behavior;
+    //Behavior behavior;
     public Animator animator;
     [Header("-About Movement")]
     public float MoveSpeed = 1;
@@ -19,7 +19,7 @@ public class Bean : LivingEntity
     public override void Start()
     {
         base.Start();
-        behavior = null;
+        //behavior = null;
     }
 
     void Update()

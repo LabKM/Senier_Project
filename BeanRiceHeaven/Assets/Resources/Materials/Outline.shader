@@ -5,117 +5,78 @@ Shader "Custom/Outline"
 		_Outline("Outline", Float) = 0.1
 		_OutlineColor("Outline Color", Color) = (1,1,1,1)
 	}
-		SubShader
+	SubShader
+	{
+		Tags { "RenderType" = "Opaque" }
+		LOD 200
+		Cull front
+
+		Pass
 		{
-			Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Opaque" }
+			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite On
 
-			// 외곽선 그리기
-			Pass
+			CGPROGRAM
+
+			#pragma vertex vert
+			#pragma fragment frag
+			#pragma target 3.0
+	
+			half _Outline;
+			half4 _OutlineColor;
+
+			struct vertexInput
 			{
-				Blend SrcAlpha OneMinusSrcAlpha
-				Cull Front // 뒷면만 그리기
-				ZWrite Off
+				float4 vertex: POSITION;
+				float3 normal : NORMAL;
+			};
 
-				CGPROGRAM
+			struct vertexOutput
+			{
+				float4 pos: SV_POSITION;
+			};
 
-				#pragma vertex vert
-				#pragma fragment frag
+			float4 CreateOutline(float4 vertPos, float Outline)
+			{
+				float4x4 scaleMat;
+				scaleMat[0][0] = 1.0f + Outline;
+				scaleMat[0][1] = 0.0f;
+				scaleMat[0][2] = 0.0f;
+				scaleMat[0][3] = 0.0f;
 
-				half _Outline;
-				half4 _OutlineColor;
+				scaleMat[1][0] = 0.0f;
+				scaleMat[1][1] = 1.0f + Outline;
+				scaleMat[1][2] = 0.0f;
+				scaleMat[1][3] = 0.0f;
+				
+				scaleMat[2][0] = 0.0f;
+				scaleMat[2][1] = 0.0f;
+				scaleMat[2][2] = 1.0f + Outline;
+				scaleMat[2][3] = 0.0f;
+				
+				scaleMat[3][0] = 0.0f;
+				scaleMat[3][1] = 0.0f;
+				scaleMat[3][2] = 0.0f;
+				scaleMat[3][3] = 1.0f;
 
-				struct vertexInput
-				{
-					float4 vertex: POSITION;
-				};
-
-				struct vertexOutput
-				{
-					float4 pos: SV_POSITION;
-				};
-
-				float4 CreateOutline(float4 vertPos, float Outline)
-				{
-					// 행렬 중에 크기를 조절하는 부분만 값을 넣는다.
-					// 밑의 부가 설명 사진 참고.
-					float4x4 scaleMat;
-					scaleMat[0][0] = 1.0f + Outline;
-					scaleMat[0][1] = 0.0f;
-					scaleMat[0][2] = 0.0f;
-					scaleMat[0][3] = 0.0f;
-					scaleMat[1][0] = 0.0f;
-					scaleMat[1][1] = 1.0f + Outline;
-					scaleMat[1][2] = 0.0f;
-					scaleMat[1][3] = 0.0f;
-					scaleMat[2][0] = 0.0f;
-					scaleMat[2][1] = 0.0f;
-					scaleMat[2][2] = 1.0f + Outline;
-					scaleMat[2][3] = 0.0f;
-					scaleMat[3][0] = 0.0f;
-					scaleMat[3][1] = 0.0f;
-					scaleMat[3][2] = 0.0f;
-					scaleMat[3][3] = 1.0f;
-
-					return mul(scaleMat, vertPos);
-				}
-
-				vertexOutput vert(vertexInput v)
-				{
-					vertexOutput o;
-
-					o.pos = UnityObjectToClipPos(CreateOutline(v.vertex, _Outline));
-
-					return o;
-				}
-
-				half4 frag(vertexOutput i) : COLOR
-				{
-					return _OutlineColor;
-				}
-
-				ENDCG
+				return mul(scaleMat, vertPos);
 			}
 
-			//// 정상적으로 그리기
-			//Pass
-			//{
-			//	Blend SrcAlpha OneMinusSrcAlpha
+			vertexOutput vert(vertexInput v)
+			{
+				vertexOutput o;
 
-			//	CGPROGRAM
+				o.pos = UnityObjectToClipPos(CreateOutline(v.vertex, _Outline));
 
-			//	#pragma vertex vert
-			//	#pragma fragment frag
+				return o;
+			}
 
-			//	half4 _Color;
-			//	sampler2D _MainTex;
-			//	float4 _MainTex_ST;
+			half4 frag(vertexOutput i) : COLOR
+			{
+				return _OutlineColor;
+			}
 
-			//	struct vertexInput
-			//	{
-			//		float4 vertex: POSITION;
-			//		float4 texcoord: TEXCOORD0;
-			//	};
-
-			//	struct vertexOutput
-			//	{
-			//		float4 pos: SV_POSITION;
-			//		float4 texcoord: TEXCOORD0;
-			//	};
-
-			//	vertexOutput vert(vertexInput v)
-			//	{
-			//		vertexOutput o;
-			//		o.pos = UnityObjectToClipPos(v.vertex);
-			//		o.texcoord.xy = (v.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw);
-			//		return o;
-			//	}
-
-			//	half4 frag(vertexOutput i) : COLOR
-			//	{
-			//		return tex2D(_MainTex, i.texcoord) * _Color;
-			//	}
-
-			//	ENDCG
-			//}
+			ENDCG
 		}
+	}
 }

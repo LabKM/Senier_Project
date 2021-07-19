@@ -60,27 +60,27 @@ public class Room : MonoBehaviour
                 case Style.Room00:
                     break;
                 case Style.Room01:
-                    prefab_roomset = Resources.Load<GameObject>("Map2/Room01/Room11Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
+                    prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room01/Room11Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
                     Instantiate<GameObject>(prefab_roomset, transform.position, room_rotation).transform.parent = transform;
                     prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/Room11");  
                     break;
                 case Style.Room02:
-                    prefab_roomset = Resources.Load<GameObject>("Map2/Room02/Room12Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
+                    prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room02/Room12Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
                     Instantiate<GameObject>(prefab_roomset, transform.position, room_rotation).transform.parent = transform;
                     prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/Room12");  
                     break;
                 case Style.Room03:
-                    prefab_roomset = Resources.Load<GameObject>("Map2/Room03/Room13Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
+                    prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room03/Room13Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
                     Instantiate<GameObject>(prefab_roomset, transform.position, room_rotation).transform.parent = transform;
                     prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/Room13");  
                     break;
                 case Style.Room04:
-                    prefab_roomset = Resources.Load<GameObject>("Map2/Room04/Room14Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
+                    prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room04/Room14Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
                     Instantiate<GameObject>(prefab_roomset, transform.position, room_rotation).transform.parent = transform;
                     prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/Room14");  
                     break;
                 case Style.Room05:
-                    prefab_roomset = Resources.Load<GameObject>("Map2/Room05/Room15Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
+                    prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room05/Room15Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
                     Instantiate<GameObject>(prefab_roomset, transform.position, room_rotation).transform.parent = transform;
                     prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/Room15");  
                     break;
@@ -89,25 +89,25 @@ public class Room : MonoBehaviour
             if(startPoint){
 
             }else if(goalPoint){
-                
+                prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room01/Room11SetTable");
             }else{
                 switch(m_style){
                     case Style.Room00:
                         break;
                     case Style.Room01:  
-                        prefab_roomset = Resources.Load<GameObject>("Map2/Room01/Room01Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
+                        prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room01/Room01Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
                         break;
                     case Style.Room02:
-                        prefab_roomset = Resources.Load<GameObject>("Map2/Room02/Room02Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
+                        prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room02/Room02Set"+((int)Random.Range(0.0f, 2.9f)).ToString());
                         break;
                     case Style.Room03:
-                        prefab_roomset = Resources.Load<GameObject>("Map2/Room03/Room03Set" + ((int)Random.Range(0.0f, 2.9f)).ToString());
+                        prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room03/Room03Set" + ((int)Random.Range(0.0f, 2.9f)).ToString());
                         break;
                     case Style.Room04:
-                        prefab_roomset = Resources.Load<GameObject>("Map2/Room04/Room04Set" + ((int)Random.Range(0.0f, 2.9f)).ToString());
+                        prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room04/Room04Set" + ((int)Random.Range(0.0f, 2.9f)).ToString());
                         break;
                     case Style.Room05:
-                        prefab_roomset = Resources.Load<GameObject>("Map2/Room05/Room05Set" + ((int)Random.Range(0.0f, 2.9f)).ToString());
+                        prefab_roomset = Resources.Load<GameObject>("Prefab/Map2/RoomSet/Room05/Room05Set" + ((int)Random.Range(0.0f, 2.9f)).ToString());
                         break;
                 }
             }
