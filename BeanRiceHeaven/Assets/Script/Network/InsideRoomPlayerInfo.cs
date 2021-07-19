@@ -13,6 +13,7 @@ public class InsideRoomPlayerInfo : MonoBehaviour
     [Header("- UI")] 
     public Text playerNickName;
     public Text playerReadyText;
+    public GameObject playerObject;
     public Button playerReadyButton;
 
     private int _clientID;
@@ -21,13 +22,25 @@ public class InsideRoomPlayerInfo : MonoBehaviour
 
     private void Awake()
     {
-        PlayerNumbering.OnPlayerNumberingChanged += OnPlayerNumberingChanged;
+        //PlayerNumbering.OnPlayerNumberingChanged += OnPlayerNumberingChanged;
+    }
+
+    private void Start()
+    {
+        if (PhotonNetwork.LocalPlayer.ActorNumber != _clientID)
+        {
+            playerReadyButton.gameObject.SetActive(false);
+            playerNickName.color = new Color32(176, 59, 69, 255);
+        }
+        Hashtable playerStatus = new Hashtable() {{"ReadyStatus", _isPlayerReady}};
+        PhotonNetwork.LocalPlayer.SetCustomProperties(playerStatus);
+        
+        playerReadyButton.onClick.AddListener(PressReadyButton);
     }
 
     // Start is called before the first frame update
-    void Start()
+    void OnEnable()
     {
-        Debug.Log("start");
         if (PhotonNetwork.LocalPlayer.ActorNumber != _clientID)
         {
             playerReadyButton.gameObject.SetActive(false);
@@ -41,7 +54,7 @@ public class InsideRoomPlayerInfo : MonoBehaviour
     
     private void OnDestroy()
     {
-        PlayerNumbering.OnPlayerNumberingChanged -= OnPlayerNumberingChanged;
+        //PlayerNumbering.OnPlayerNumberingChanged -= OnPlayerNumberingChanged;
     }
     
     public void InitRoomPlayer(int playerID, string playerName)
@@ -68,18 +81,20 @@ public class InsideRoomPlayerInfo : MonoBehaviour
         PhotonNetwork.LocalPlayer.SetCustomProperties(readyStatus);
     }
 
-    void OnPlayerNumberingChanged()
-    {
-        if (PhotonNetwork.LocalPlayer.GetPlayerNumber() == -1)
-            return;
-        foreach (Player p in PhotonNetwork.PlayerList)
-        {
-            Debug.Log("Player: " + p.NickName + " and " + p.GetPlayerNumber());
-            if (BeanRiceHeavenLobbyManager.Instance.InsideRoomPlayerEntries.ContainsKey(p.ActorNumber))
-            {
-                BeanRiceHeavenLobbyManager.Instance.InsideRoomPlayerEntries[p.ActorNumber].transform.localPosition =
-                    new Vector3(-1000 + (p.GetPlayerNumber() + 1) * 400, 0, 0);  
-            }
-        }
-    }
+    
+    
+    // void OnPlayerNumberingChanged()
+    // {
+    //     if (PhotonNetwork.LocalPlayer.GetPlayerNumber() == -1)
+    //         return;
+    //     foreach (Player p in PhotonNetwork.PlayerList)
+    //     {
+    //         Debug.Log("Player: " + p.NickName + " and " + p.GetPlayerNumber());
+    //         if (BeanRiceHeavenLobbyManager.Instance.InsideRoomPlayerEntries.ContainsKey(p.ActorNumber))
+    //         {
+    //             BeanRiceHeavenLobbyManager.Instance.InsideRoomPlayerEntries[p.ActorNumber].transform.localPosition =
+    //                 new Vector3(-1000 + (p.GetPlayerNumber() + 1) * 400, 0, 0);  
+    //         }
+    //     }
+    // }
 }

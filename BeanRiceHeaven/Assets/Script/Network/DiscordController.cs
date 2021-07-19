@@ -87,7 +87,7 @@ namespace Script.Network
             {
                 currSceneState = "매칭 중";
                                 
-               activity.Party = new PartySize
+                activity.Party = new PartySize
                {
                    CurrentSize = PhotonNetwork.CurrentRoom.PlayerCount,
                    MaxSize = PhotonNetwork.CurrentRoom.MaxPlayers
