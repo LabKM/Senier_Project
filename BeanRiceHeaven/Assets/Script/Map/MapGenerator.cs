@@ -17,6 +17,7 @@ public class MapGenerator : MonoBehaviour
     public GameObject TilePrefab;
     public GameObject RoomPrefab;
     public GameObject Door2Prefab;
+    public GameSceneUIManager uIManager;
 
     List<Coord> allTileCoords;
     Queue<Coord> shuffledTileCoords;
@@ -337,6 +338,10 @@ public class MapGenerator : MonoBehaviour
                 }
             }
         } // Door
+
+        // 미니맵 생성
+        uIManager.CreateMapByRoom(roomMap);
+        uIManager.noticePlayer(0, StartPoint);
     }
 
     bool MapIsFullyAccessible(bool[,] obstacleMap, int currentObstacleCount, Coord Start)

@@ -9,6 +9,12 @@ public class GameManager : MonoBehaviour
     public Transform StartPoint;
     public Transform GoalPoint;
 
+    List<LivingEntity> hpList;
+
+    void Awake(){
+        hpList = new List<LivingEntity>();
+    }
+
     void Start(){
         GameStart();
     }
