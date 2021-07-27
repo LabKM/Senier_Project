@@ -148,12 +148,12 @@ MonoBehaviour:
       enableFptlForForwardOpaque: 0
       enableBigTilePrepass: 0
       isFptlEnabled: 0
-  m_RenderPipelineResources: {fileID: 0}
+  m_RenderPipelineResources: {fileID: 11400000, guid: 3ce144cff5783da45aa5d4fdc2da14b7, type: 2}
   m_RenderPipelineRayTracingResources: {fileID: 0}
   m_DefaultVolumeProfile: {fileID: 11400000, guid: 9bd58b7756ee66c4fbb1394f4258ed27, type: 2}
   m_LensAttenuation: 0
   m_UseRenderGraph: 1
-  m_DefaultLookDevProfile: {fileID: 0}
+  m_DefaultLookDevProfile: {fileID: 11400000, guid: 254c4fe87beb7be4fa72e1681edbed02, type: 2}
   m_RenderingPathDefaultCameraFrameSettings:
     bitDatas:
       data1: 72198262773251917
@@ -221,10 +221,10 @@ MonoBehaviour:
     supportTransparentBackface: 1
     supportTransparentDepthPrepass: 1
     supportTransparentDepthPostpass: 1
-    colorBufferFormat: 74
+    colorBufferFormat: 48
     supportCustomPass: 1
     customBufferFormat: 12
-    supportedLitShaderMode: 2
+    supportedLitShaderMode: 1
     planarReflectionResolution:
       m_Values: 000100000004000000080000
       m_SchemaId:
@@ -239,7 +239,7 @@ MonoBehaviour:
     decalLayerName5: Decal Layer 5
     decalLayerName6: Decal Layer 6
     decalLayerName7: Decal Layer 7
-    msaaSampleCount: 1
+    msaaSampleCount: 8
     supportMotionVectors: 1
     supportRuntimeDebugDisplay: 0
     supportRuntimeAOVAPI: 0
