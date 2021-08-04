@@ -23,8 +23,8 @@ public class GameSceneUIManager : MonoBehaviour
     }
 
     public void CreateMiniMapByRoom(Vector2Int widthHeight){
+        mapUI.RecreateMapHolder();
         Transform roomHolder = mapUI.MapHolder;
-        
         miniRoom = new Transform[widthHeight.x, widthHeight.y];
 
         Rect size_rect = Prefab_Room.GetComponent<RectTransform>().rect; 
