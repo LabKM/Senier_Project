@@ -12,7 +12,7 @@ public class BeanController : MonoBehaviour
     Transform liftUp;
     [SerializeField]
     Transform liftDown;
-    Rigidbody rigidbody;
+    Rigidbody myRigidbody;
     Vector3 lastMousePosition;
     [SerializeField, Min(0.01f)]
     Vector2 mouseSensitivity;
@@ -28,10 +28,12 @@ public class BeanController : MonoBehaviour
     
     public bool hand{get; set;}
     public ILiftable liftObject { get; set; }
+    
+    
 
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        myRigidbody = GetComponent<Rigidbody>();
         isInputable = true;
         
         lastMousePosition = Input.mousePosition;
@@ -55,21 +57,16 @@ public class BeanController : MonoBehaviour
             
             if(OnGround){
                 Vector3 vel = Movement.normalized * bean.MoveSpeed * (Input.GetKey(KeyCode.LeftShift) ? 2.5f : 1);
-                vel.y = rigidbody.velocity.y;
-                rigidbody.velocity = vel;
+                vel.y = myRigidbody.velocity.y;
+                myRigidbody.velocity = vel;
             }
+            bean.UpdateMovement();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Application.Quit();
         }
-    }
-
-    private void LateUpdate()
-    {
-        // transform.position = bean.transform.position;
-        // bean.transform.position = transform.position;
     }
     
     private void ZoomInOut(){
@@ -129,7 +126,7 @@ public class BeanController : MonoBehaviour
 
     public void Jump(float power)
     {
-        rigidbody.AddForce(Vector3.up * power * 0.6f);
+        myRigidbody.AddForce(Vector3.up * power * 0.6f);
         OnGround = false;
     }
 

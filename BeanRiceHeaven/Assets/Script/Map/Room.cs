@@ -14,12 +14,12 @@ public class Room : MonoBehaviour
     // room00
     // 000
     // 010
-    // 000 
+    // 010 
 
     // room01
-    // 000
     // 010
-    // 010 
+    // 010
+    // 000 
 
     // room02
     // 010
@@ -42,6 +42,8 @@ public class Room : MonoBehaviour
     // 000
 
     Style m_style;
+    public Style style { get{ return m_style;} }
+    public Vector2Int section;
 
     public List<Transform> doors; // 동(x+) 서(x-) 남(z-) 북(z+) 순서
 
@@ -50,6 +52,7 @@ public class Room : MonoBehaviour
     public bool goalPoint{set; get;}
 
     Quaternion room_rotation;
+    public float minimap_rotation{ get; private set; }
 
     public void SetRoomStyle(Style roomStyle){
         m_style = roomStyle;
@@ -142,13 +145,16 @@ public class Room : MonoBehaviour
                     m_style = Style.Room01;
                     room_rotation = Quaternion.Euler(0, 90, 0);
                 }
+                minimap_rotation = room_rotation.eulerAngles.y - 180;
                 break;
             case 2:
                 if(!east && !west && south && north){
                     m_style = Style.Room02;
+                    minimap_rotation = room_rotation.eulerAngles.y;
                 }else if(east && west && !south && !north){
                     m_style = Style.Room02;
                     room_rotation = Quaternion.Euler(0, 90, 0);
+                    minimap_rotation = room_rotation.eulerAngles.y;
                 }else{
                     if(!east && west && !south && north){
                         m_style = Style.Room05;
@@ -165,6 +171,7 @@ public class Room : MonoBehaviour
                         m_style = Style.Room05;
                         room_rotation = Quaternion.Euler(0, 180, 0);
                     }
+                    minimap_rotation = room_rotation.eulerAngles.y - 90;
                 }
                 break;
             case 3:
@@ -180,6 +187,7 @@ public class Room : MonoBehaviour
                     m_style = Style.Room03;
                     room_rotation = Quaternion.Euler(0, 90, 0);
                 }
+                minimap_rotation = room_rotation.eulerAngles.y + 90;
                 break;
             case 4:
                 m_style = Style.Room04;
