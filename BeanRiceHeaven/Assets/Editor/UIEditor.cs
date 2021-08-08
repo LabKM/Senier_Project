@@ -6,13 +6,13 @@ using UnityEditor;
 [CustomEditor (typeof (GameSceneUIManager))]
 public class UIEditor : Editor
 {
-    static ItemUImanager.HandItem item;
+    static ItemObject.HandItem item;
 
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
         GameSceneUIManager ui = target as GameSceneUIManager;
-        item = (ItemUImanager.HandItem)EditorGUILayout.EnumPopup("Kind of Item", item);
+        item = (ItemObject.HandItem)EditorGUILayout.EnumPopup("Kind of Item", item);
         if (GUILayout.Button("Get Item"))
         {
             ui.itemUI.GetItemUI(item);

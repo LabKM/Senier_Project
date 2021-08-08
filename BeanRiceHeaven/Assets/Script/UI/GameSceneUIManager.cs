@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class GameSceneUIManager : MonoBehaviour
 {
+    public static GameSceneUIManager Instance{get; private set; }
     bool isInputable;
     public MapUImanager mapUI;
     public ItemUImanager itemUI;
@@ -16,6 +17,10 @@ public class GameSceneUIManager : MonoBehaviour
 
     void Awake(){
         isInputable = true;
+        if(GameSceneUIManager.Instance != null && GameSceneUIManager.Instance != this){
+            DestroyImmediate(GameSceneUIManager.Instance);
+        }
+        Instance = this;
     }
 
     string NameOfRoom(int x, int y){

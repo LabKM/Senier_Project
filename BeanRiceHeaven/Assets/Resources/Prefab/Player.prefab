@@ -83,7 +83,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1740207149}
   m_LocalRotation: {x: 0.50000036, y: -0.49999967, z: -0.49999967, w: 0.50000036}
-  m_LocalPosition: {x: -0.44499975, y: 0, z: -0.21352664}
+  m_LocalPosition: {x: -0.44499975, y: 0, z: 0.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4672259314550782574}
@@ -113,7 +113,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2087312470}
   m_LocalRotation: {x: 0.50000036, y: -0.49999967, z: -0.49999967, w: 0.50000036}
-  m_LocalPosition: {x: -0.33699992, y: 0, z: 0.12847343}
+  m_LocalPosition: {x: -0.323, y: 0, z: 0.12847343}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4672259314550782574}
@@ -182,7 +182,6 @@ GameObject:
   - component: {fileID: 154307573}
   - component: {fileID: -2409867968277218712}
   - component: {fileID: 3743807323550988616}
-  - component: {fileID: 7792438943823890625}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -344,20 +343,6 @@ MonoBehaviour:
     LayerIndex: 0
   - SynchronizeType: 0
     LayerIndex: 1
---- !u!64 &7792438943823890625
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3733749650123612746}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &3733749650326059293
 GameObject:
   m_ObjectHideFlags: 0

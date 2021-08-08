@@ -2,17 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemObject : MonoBehaviour
+public class ItemObject : LiftableObject
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
+    public enum HandItem{
+        Cloth, Guardtracker, Healkit, Key, Speedup, Treasuretracker
     }
+    [SerializeField]
+    HandItem Type;
+    public HandItem type{ get{ return Type; } }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public override void LeftShift(Transform _transform){
+        onHand = !onHand;
+        if(onHand){
+            base.PhysicsOff();
+            mesh.enabled = false;
+            GameSceneUIManager.Instance.itemUI.GetItemUI(type);
+        }else{
+            base.PhysicsOn();
+            mesh.enabled = true;
+            GameSceneUIManager.Instance.itemUI.PutItemUI(Type);
+            transform.position = _transform.position;
+        }
     }
 }

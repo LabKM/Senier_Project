@@ -7,6 +7,7 @@ using Coord = UnityEngine.Vector2Int;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance{ get; private set;}
     public GameSceneUIManager uiManager;
     public GameObject PlayerCharacter;
     public GameObject Treasure;
@@ -31,6 +32,10 @@ public class GameManager : MonoBehaviour
         MapGenerator map = GetComponent<MapGenerator>();
         map.gameManager = this;
         map.GenerateMap();
+        if(GameManager.Instance != null && GameManager.Instance != this){
+            DestroyImmediate(GameManager.Instance);    
+        }
+        Instance = this;
     }
 
     void Start()
@@ -63,12 +68,13 @@ public class GameManager : MonoBehaviour
             uiManager.noticePlayer(0, nowRoomCoord_player);
 
             // 시작 지점에 있을 때 보물을 가지고 있는가 확인
-            if (PlayerCharacter.GetComponent<BeanController>().liftObject != null)
+            BeanController PlayerBean = PlayerCharacter.GetComponent<BeanController>();
+            if (!PlayerBean.inventory.isHandEmpty)
             {
                 Debug.Log("Get Item");
-                if (nowRoomCoord_player == StartPoint){
+                if (nowRoomCoord_player == StartPoint && PlayerBean.inventory.isTreasure){
                     Debug.Log("Get Item in goal");
-                    uiManager.option.GameClear();
+                    //uiManager.option.GameClear();
                 }
          }
 

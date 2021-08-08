@@ -5,15 +5,12 @@ using UnityEngine.UI;
 
 public class ItemUImanager : MonoBehaviour
 {
-    public enum HandItem{
-        Cloth, Guardtracker, Healkit, Key, Speedup, Treasuretracker
-    }
     public Image image1;
     public Image image2;
 
     private List<Sprite> itemImage = null;
 
-    private Sprite GetImage(HandItem item){
+    private Sprite GetImage(ItemObject.HandItem item){
         if(itemImage == null){
             itemImage = new List<Sprite>(Resources.LoadAll<Sprite>("UI/Ingame/Item"));
 
@@ -25,7 +22,7 @@ public class ItemUImanager : MonoBehaviour
         return itemImage[(int)item];
     }
 
-    public void GetItemUI(HandItem item){
+    public void GetItemUI(ItemObject.HandItem item){
         if(!image1.enabled){
             image1.enabled = true;
             image1.sprite = GetImage(item);
@@ -44,6 +41,19 @@ public class ItemUImanager : MonoBehaviour
             image2.enabled = false;
         }else if(image1.enabled){
             image1.enabled = false;
+        }
+    }
+
+    public void PutItemUI(ItemObject.HandItem item){
+        if(image2.enabled && image2.sprite == GetImage(item)){
+            image2.enabled = false;
+        }else if(image1.enabled && image1.sprite == GetImage(item)){
+            image1.enabled = false;
+            if(image2.enabled){
+                image2.enabled = false;
+                image1.sprite = image2.sprite;
+                image1.enabled = true;
+            }
         }
     }
 }

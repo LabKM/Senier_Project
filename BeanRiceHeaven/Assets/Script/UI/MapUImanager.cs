@@ -29,6 +29,7 @@ public class MapUImanager : MonoBehaviour
         holder = new GameObject("Room").transform;
         holder.parent = transform.Find("Rooms");
         holder.localPosition = Vector3.zero;
+        holder.gameObject.SetActive(nowVisible);
     }
 
     public void OnButton(){

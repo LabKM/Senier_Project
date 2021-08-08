@@ -7,13 +7,12 @@ public class LiftableObject : MonoBehaviour, ILiftable
     public Material Outline;
     public Transform liftedPoint;
     Rigidbody my_rigidbody;
-    MeshRenderer mesh;
-    BeanController lifter;
-    bool onHand;
-    List<BoxCollider> colliders;
+    protected MeshRenderer mesh;
+    protected Inventory lifter;
+    protected bool onHand;
+    List<Collider> colliders;
     private Transform original_parent;
-
-    public void LeftShift(Transform _transform)
+    public virtual void LeftShift(Transform _transform)
     { 
         onHand = !onHand;
         if (onHand)
@@ -33,47 +32,62 @@ public class LiftableObject : MonoBehaviour, ILiftable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!onHand && lifter == null && other.tag == "Player")
+        if (other.tag == "Player")
         {
-            lifter = other.GetComponent<BeanController>();
-            lifter.liftObject = this;
-            List<Material> materials = new List<Material>();
-            mesh.GetMaterials(materials);
-            materials.Add(Outline);
-            mesh.materials = materials.ToArray();
+            lifter = other.GetComponent<BeanController>().inventory;
+            lifter.OnCloseObejct(this);
+            Debug.Log("Add Item" + transform.name);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!onHand && lifter != null && other.tag == "Player")
+        if (other.tag == "Player")
         {
-            lifter.liftObject = null;
+            Debug.Log("Reomve Item" + transform.name);
+            lifter.OutofObject(this);
             lifter = null;
+        }
+    }
+
+    public bool isOutline { get; private set; }
+    public void OnEffectOfOutline(){
+        if(!isOutline){
             List<Material> materials = new List<Material>();
             mesh.GetMaterials(materials);
-            materials.RemoveAt(materials.Count-1);
+            materials.Add(Outline);
             mesh.materials = materials.ToArray();
+            isOutline = true;
+        }
+    }
+
+    public void OffEffectOfOutline(){
+        if(isOutline){
+            List<Material> materials = new List<Material>();
+            mesh.GetMaterials(materials);
+            materials.RemoveAt(1);
+            mesh.materials = materials.ToArray();
+            isOutline = false;
         }
     }
 
     void Start()
     { 
-        colliders = new List<BoxCollider>(GetComponents<BoxCollider>());
+        colliders = new List<Collider>(GetComponents<Collider>());
         my_rigidbody = GetComponent<Rigidbody>();
         mesh = GetComponent<MeshRenderer>();
         lifter = null;
         onHand = false;
     }
 
-    void PhysicsOff(){
+    protected void PhysicsOff(){
         colliders[0].enabled = false;
         colliders[1].enabled = false;
         my_rigidbody.isKinematic = true;
         my_rigidbody.Sleep();
     }
 
-    void PhysicsOn(){
+    protected void PhysicsOn(){
         colliders[0].enabled = true;
         colliders[1].enabled = true;
         my_rigidbody.WakeUp();
