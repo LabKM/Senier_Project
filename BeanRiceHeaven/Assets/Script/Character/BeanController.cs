@@ -12,7 +12,7 @@ public class BeanController : MonoBehaviour
     Transform liftUp;
     [SerializeField]
     Transform liftDown;
-    Rigidbody rigidbody;
+    Rigidbody myRigidbody;
     Vector3 lastMousePosition;
     [SerializeField, Min(0.01f)]
     Vector2 mouseSensitivity;
@@ -26,12 +26,14 @@ public class BeanController : MonoBehaviour
     }
     public bool OnGround { get; set; }
     
-    public bool hand{get; set;}
-    public ILiftable liftObject { get; set; }
+    public bool hand{ get; set; }
+    Inventory Inventory;
+    public Inventory inventory{ get{ return Inventory;} }
+        
 
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
+        myRigidbody = GetComponent<Rigidbody>();
         isInputable = true;
         
         lastMousePosition = Input.mousePosition;
@@ -39,7 +41,9 @@ public class BeanController : MonoBehaviour
 
         OnGround = true;
         hand = false;
-        liftObject = null;
+
+        Inventory = new Inventory(this, liftUp, liftDown);
+        inventory.MaxItem = 2;
     }
 
     void Update()
@@ -49,15 +53,17 @@ public class BeanController : MonoBehaviour
             if(MouseLocker.mouseLocked){                
                 RotateCamera();
             }
-            ZoomInOut();
+            ChangeItem();
+            //ZoomInOut();
             MovePlayerByInput();
             Interact();
             
             if(OnGround){
                 Vector3 vel = Movement.normalized * bean.MoveSpeed * (Input.GetKey(KeyCode.LeftShift) ? 2.5f : 1);
-                vel.y = rigidbody.velocity.y;
-                rigidbody.velocity = vel;
+                vel.y = myRigidbody.velocity.y;
+                myRigidbody.velocity = vel;
             }
+            bean.UpdateMovement();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -65,13 +71,15 @@ public class BeanController : MonoBehaviour
             Application.Quit();
         }
     }
-
-    private void LateUpdate()
-    {
-        // transform.position = bean.transform.position;
-        // bean.transform.position = transform.position;
-    }
     
+    private void ChangeItem(){
+        float wheelInput = Input.GetAxis("Mouse ScrollWheel");
+        int delta = Mathf.RoundToInt(wheelInput * 10);
+        if(delta != 0){
+            inventory.ChagneChosenItem(delta);
+        }
+    }
+
     private void ZoomInOut(){
         float wheelInput = Input.GetAxis("Mouse ScrollWheel");
         if(wheelInput != 0){
@@ -114,22 +122,24 @@ public class BeanController : MonoBehaviour
 
     void Interact()
     {
-        if (Input.GetMouseButtonDown(0) && liftObject != null) { 
-            if(!hand){
-                hand = true;
+        // Get Item
+        if (Input.GetMouseButtonDown(0)) { 
+            inventory.GetItem();
+            bean.animator.SetBool("Hand", hand);            
+        }
+        if(Input.GetMouseButton(1)){
+            if(hand){
+                inventory.PutHandItem();
                 bean.animator.SetBool("Hand", hand);
-                liftObject.LeftShift(liftUp);
             }else{
-                hand = false;
-                bean.animator.SetBool("Hand", hand);
-                liftObject.LeftShift(liftDown);
+                inventory.PutPocketItem(0);
             }
         }
     }
 
     public void Jump(float power)
     {
-        rigidbody.AddForce(Vector3.up * power * 0.6f);
+        myRigidbody.AddForce(Vector3.up * power * 0.6f);
         OnGround = false;
     }
 

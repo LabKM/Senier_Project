@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface ILiftable
 {
-    void LeftShift(Transform _transform);
+   void LeftShift(Transform _transform);
 }

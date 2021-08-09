@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Coord = UnityEngine.Vector2Int;
+
+[RequireComponent (typeof(GameManager))]
 public class MapGenerator : MonoBehaviour
 {
+    public GameManager gameManager{get; set;}
    // 랜덤 변수
     [Min(1)]
     public Vector2Int wholeMapSize;
@@ -12,20 +15,16 @@ public class MapGenerator : MonoBehaviour
     public float RateOfRoom;
     [Range(0, 1)]
     public float ClosureRate;
-    private Vector3 StartPosition;
 
     public GameObject TilePrefab;
     public GameObject RoomPrefab;
     public GameObject Door2Prefab;
 
+    static string holderName = "Generated Map";
     List<Coord> allTileCoords;
     Queue<Coord> shuffledTileCoords;
     
     public int seed = 10;
-
-    Coord MapCenter;
-
-    Vector3 TileSize = new Vector3(3.556f, 0, 3.556f);
 
     //[HideInInspector]
     //public Transform[,] mapArray { set; get; }
@@ -150,17 +149,17 @@ public class MapGenerator : MonoBehaviour
 
     Coord GetDeepestRoom(bool[,] flagMap, Coord Start){
         // 시작 지점부터 상하좌우로 한 칸씩 확인 하면서 모든 방에 최소 접근 횟수 기록해서 가장 깊이 있는 방을 리턴 
-        int[,] roomMap = new int[flagMap.GetLength(0) / 2, flagMap.GetLength(1) / 2];
-        for(int i = 0; i < roomMap.GetLength(0); ++i){
-            for(int j = 0; j < roomMap.GetLength(1); ++j){
-                roomMap[i,j] = int.MaxValue;
+        int[,] temp_roomMap = new int[flagMap.GetLength(0) / 2, flagMap.GetLength(1) / 2];
+        for(int i = 0; i < gameManager.roomMap.GetLength(0); ++i){
+            for(int j = 0; j < gameManager.roomMap.GetLength(1); ++j){
+                temp_roomMap[i,j] = int.MaxValue;
             }
         }
 
         Queue<Coord> curList = new Queue<Coord>();
         Queue<Coord> curListWait = new Queue<Coord>();
         curList.Enqueue(Start);
-        roomMap[Start.x, Start.y] = 0;
+        temp_roomMap[Start.x, Start.y] = 0;
 
         Coord DeepestRoom = Start;
 
@@ -176,12 +175,12 @@ public class MapGenerator : MonoBehaviour
                     int neighbourY = cur.y + y;
                     if (x != y && x==0 || y == 0)
                     {
-                        if ((neighbourX >= 0 && neighbourX < roomMap.GetLength(0) && neighbourY >= 0 && neighbourY < roomMap.GetLength(1))
-                            && !flagMap[cur.x * 2 + 1 + x, cur.y * 2 + 1 + y] && (roomMap[neighbourX, neighbourY] > roomMap[cur.x, cur.y] + 1)) 
+                        if ((neighbourX >= 0 && neighbourX < gameManager.roomMap.GetLength(0) && neighbourY >= 0 && neighbourY < gameManager.roomMap.GetLength(1))
+                            && !flagMap[cur.x * 2 + 1 + x, cur.y * 2 + 1 + y] && (temp_roomMap[neighbourX, neighbourY] > temp_roomMap[cur.x, cur.y] + 1)) 
                         {
-                            roomMap[neighbourX, neighbourY] = roomMap[cur.x, cur.y] + 1;
+                            temp_roomMap[neighbourX, neighbourY] = temp_roomMap[cur.x, cur.y] + 1;
                             curListWait.Enqueue(new Coord(neighbourX, neighbourY));
-                            if(roomMap[DeepestRoom.x, DeepestRoom.y] < roomMap[neighbourX, neighbourY]){
+                            if(temp_roomMap[DeepestRoom.x, DeepestRoom.y] < temp_roomMap[neighbourX, neighbourY]){
                                 DeepestRoom.x = neighbourX;
                                 DeepestRoom.y = neighbourY;
                             }
@@ -200,12 +199,12 @@ public class MapGenerator : MonoBehaviour
         return DeepestRoom;
     }
 
-    public void GenerateMap()
+    public void GenerateMap() // 
     {
-        
-        ShuffleCoord();
+        gameManager = GetComponent<GameManager>();
+        gameManager.TileSize = new Vector3(3.556f, 0, 3.556f);
 
-        string holderName = "Generated Map";
+        ShuffleCoord();
         if (transform.Find(holderName))
         {
             DestroyImmediate(transform.Find(holderName).gameObject);
@@ -213,11 +212,11 @@ public class MapGenerator : MonoBehaviour
         //생성 준비
         GameObject MapHolder = new GameObject(holderName);
         MapHolder.transform.parent = this.transform;
-        StartPosition = new Vector3(-wholeMapSize.x / 2 * TileSize.x, 0, wholeMapSize.y / 2 * TileSize.z);
-        MapCenter = new Coord(wholeMapSize.x / 2, wholeMapSize.y / 2);
+        gameManager.StartPosition = new Vector3(-wholeMapSize.x / 2 * gameManager.TileSize.x, 0, wholeMapSize.y / 2 * gameManager.TileSize.z);
+        Coord MapCenter = new Coord(wholeMapSize.x / 2, wholeMapSize.y / 2);
 
         // 방 담을 공간 및 방의 개수  : 복도의 개수
-        Room[,] roomMap = new Room[wholeMapSize.x, wholeMapSize.y];
+        gameManager.roomMap = new Room[wholeMapSize.x, wholeMapSize.y];
         int NumOfRoom = (int)(RateOfRoom * wholeMapSize.x * wholeMapSize.y);
         NumOfRoom = NumOfRoom > 1 ? NumOfRoom : 2;
 
@@ -236,59 +235,63 @@ public class MapGenerator : MonoBehaviour
         if(NumOfRoom > 0){
             NumOfRoom--;
             Coord randomCoord = StartPoint; 
-            Vector3 roomPos = CoordToVector(randomCoord.x, randomCoord.y);
-            roomMap[randomCoord.x, randomCoord.y] = Instantiate<GameObject>(RoomPrefab, roomPos, Quaternion.identity).GetComponent<Room>();
+            Vector3 roomPos = gameManager.CoordToVector(randomCoord.x, randomCoord.y);
+            gameManager.roomMap[randomCoord.x, randomCoord.y] = Instantiate<GameObject>(RoomPrefab, roomPos, Quaternion.identity).GetComponent<Room>();
             Coord wayCenter = randomCoord * 2 + new Vector2Int(1, 1);
-            roomMap[randomCoord.x, randomCoord.y].hallway = false;
-            roomMap[randomCoord.x, randomCoord.y].startPoint = true;
-            roomMap[randomCoord.x, randomCoord.y].SetDoorStyle(
+            gameManager.roomMap[randomCoord.x, randomCoord.y].hallway = false;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].startPoint = true;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].section = randomCoord;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].SetDoorStyle(
                 !unassessableFlag[wayCenter.x + 1, wayCenter.y], 
                 !unassessableFlag[wayCenter.x - 1, wayCenter.y],
                 !unassessableFlag[wayCenter.x, wayCenter.y + 1],
                 !unassessableFlag[wayCenter.x, wayCenter.y - 1]);
-            roomMap[randomCoord.x, randomCoord.y].transform.parent = MapHolder.transform;
-            roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y) + "_Start";
-            gm.StartPoint = roomMap[randomCoord.x, randomCoord.y].transform;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].transform.parent = MapHolder.transform;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y);
+            gm.StartPoint = randomCoord;
         }
         // 목표 방 위치 결정 가장 깊은 방으로 설정함
         if(NumOfRoom > 0){
             NumOfRoom--;
             Coord randomCoord = GetDeepestRoom(unassessableFlag, StartPoint); 
-            Vector3 roomPos = CoordToVector(randomCoord.x, randomCoord.y);
-            roomMap[randomCoord.x, randomCoord.y] = Instantiate<GameObject>(RoomPrefab, roomPos, Quaternion.identity).GetComponent<Room>();
+            Vector3 roomPos = gameManager.CoordToVector(randomCoord.x, randomCoord.y);
+            gameManager.roomMap[randomCoord.x, randomCoord.y] = Instantiate<GameObject>(RoomPrefab, roomPos, Quaternion.identity).GetComponent<Room>();
             Coord wayCenter = randomCoord * 2 + new Vector2Int(1, 1);
-            roomMap[randomCoord.x, randomCoord.y].hallway = false;
-            roomMap[randomCoord.x, randomCoord.y].goalPoint = true;
-            roomMap[randomCoord.x, randomCoord.y].SetDoorStyle(
+            gameManager.roomMap[randomCoord.x, randomCoord.y].hallway = false;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].goalPoint = true;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].section = randomCoord;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].SetDoorStyle(
                 !unassessableFlag[wayCenter.x + 1, wayCenter.y], 
                 !unassessableFlag[wayCenter.x - 1, wayCenter.y],
                 !unassessableFlag[wayCenter.x, wayCenter.y + 1],
                 !unassessableFlag[wayCenter.x, wayCenter.y - 1]);
-            roomMap[randomCoord.x, randomCoord.y].transform.parent = MapHolder.transform;
-            roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y) + "_Goal";
-            gm.GoalPoint = roomMap[randomCoord.x, randomCoord.y].transform;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].transform.parent = MapHolder.transform;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y);
+            gm.GoalPoint = randomCoord;
         }
 
 
         // 방 생성
         for(int  i = 0; i < NumOfRoom; ++i){
             Coord randomCoord = GetRandomCoord();
-            if(roomMap[randomCoord.x, randomCoord.y] != null){ // roomMap이 뭔가로 채워진 경우 다시 
+            if(gameManager.roomMap[randomCoord.x, randomCoord.y] != null){ // roomMap이 뭔가로 채워진 경우 다시 
                 i--;
             }else{ // 방 인스턴스화 하기 
                 Coord wayCenter = randomCoord * 2 + new Vector2Int(1, 1);
                 if( !ClosedMap(unassessableFlag, wayCenter.x, wayCenter.y) ){
-                    Vector3 roomPos = CoordToVector(randomCoord.x, randomCoord.y);
-                    GameObject newObstacle = Instantiate<GameObject>(RoomPrefab, roomPos, Quaternion.identity);
-                    roomMap[randomCoord.x, randomCoord.y] = newObstacle.GetComponent<Room>();
-                    roomMap[randomCoord.x, randomCoord.y].hallway = false;
-                    roomMap[randomCoord.x, randomCoord.y].SetDoorStyle(
+                    Vector3 roomPos = gameManager.CoordToVector(randomCoord.x, randomCoord.y);
+                    GameObject room = Instantiate<GameObject>(RoomPrefab, roomPos, Quaternion.identity);
+                    gameManager.roomMap[randomCoord.x, randomCoord.y] = room.GetComponent<Room>();
+                    gameManager.roomMap[randomCoord.x, randomCoord.y].hallway = false;
+                    gameManager.roomMap[randomCoord.x, randomCoord.y].section = randomCoord;
+                    gameManager.roomMap[randomCoord.x, randomCoord.y].SetDoorStyle(
                         !unassessableFlag[wayCenter.x + 1, wayCenter.y], 
                         !unassessableFlag[wayCenter.x - 1, wayCenter.y],
                         !unassessableFlag[wayCenter.x, wayCenter.y + 1],
                         !unassessableFlag[wayCenter.x, wayCenter.y - 1]);
-                    newObstacle.transform.parent = MapHolder.transform;
-                    newObstacle.transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y);
+                    room.transform.parent = MapHolder.transform;
+                    room.transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y);
+                    
                 }
             }
         } // Room
@@ -298,15 +301,16 @@ public class MapGenerator : MonoBehaviour
             for (int j = 0; j < wholeMapSize.y; ++j)
             {
                 Coord wayPoint = new Vector2Int(i, j) * 2 + new Vector2Int(1, 1);
-                if (!roomMap[i, j] && !ClosedMap(unassessableFlag, wayPoint.x, wayPoint.y))
+                if (!gameManager.roomMap[i, j] && !ClosedMap(unassessableFlag, wayPoint.x, wayPoint.y))
                 {
-                    Vector3 roomPos = CoordToVector(i, j);
+                    Vector3 roomPos = gameManager.CoordToVector(i, j);
                     Room newTile = Instantiate<GameObject>(TilePrefab, roomPos, Quaternion.identity).GetComponent<Room>();
                     newTile.transform.name = MapUtility.getRoomName(i, j);
                     newTile.transform.parent = MapHolder.transform;
-                    roomMap[i, j] = newTile;
-                    roomMap[i, j].hallway = true;
-                    roomMap[i, j].SetDoorStyle(
+                    gameManager.roomMap[i, j] = newTile;
+                    gameManager.roomMap[i, j].hallway = true;
+                    gameManager.roomMap[i, j].section = new Coord(i, j);
+                    gameManager.roomMap[i, j].SetDoorStyle(
                         !unassessableFlag[wayPoint.x + 1, wayPoint.y], 
                         !unassessableFlag[wayPoint.x - 1, wayPoint.y],
                         !unassessableFlag[wayPoint.x, wayPoint.y + 1],
@@ -319,8 +323,8 @@ public class MapGenerator : MonoBehaviour
         Door2[,] doors_v = new Door2[wholeMapSize.x, wholeMapSize.y - 1];
         for(int i = 0; i < doors_h.GetLength(0); ++i){
             for(int j = 0; j < doors_h.GetLength(1); ++j){
-                if((roomMap[i,j] != null || roomMap[i+1, j]) && !unassessableFlag[i*2+2, j*2+1]){
-                    Vector3 point = (CoordToVector(i, j) + CoordToVector(i+1, j)) / 2;
+                if((gameManager.roomMap[i,j] != null || gameManager.roomMap[i+1, j]) && !unassessableFlag[i*2+2, j*2+1]){
+                    Vector3 point = (gameManager.CoordToVector(i, j) + gameManager.CoordToVector(i+1, j)) / 2;
                     GameObject door = Instantiate<GameObject>(Door2Prefab, point, Quaternion.Euler(0, 90, 0));
                     doors_h[i,j] = door.GetComponent<Door2>();
                     door.transform.parent = MapHolder.transform;
@@ -329,14 +333,19 @@ public class MapGenerator : MonoBehaviour
         }
         for(int i = 0; i < doors_v.GetLength(0); ++i){
             for(int j = 0; j < doors_v.GetLength(1); ++j){
-                if((roomMap[i,j] != null || roomMap[i, j+1]) && !unassessableFlag[i*2+1, j*2+2]){    
-                    Vector3 point = (CoordToVector(i, j) + CoordToVector(i, j+1)) / 2;
+                if((gameManager.roomMap[i,j] != null || gameManager.roomMap[i, j+1]) && !unassessableFlag[i*2+1, j*2+2]){    
+                    Vector3 point = (gameManager.CoordToVector(i, j) + gameManager.CoordToVector(i, j+1)) / 2;
                     GameObject door = Instantiate<GameObject>(Door2Prefab, point, Quaternion.identity);
                     doors_v[i,j] = door.GetComponent<Door2>();
                     door.transform.parent = MapHolder.transform;
                 }
             }
         } // Door
+
+        // 미니맵 생성
+        gameManager.uiManager.CreateMiniMapByRoom(new Coord(gameManager.roomMap.GetLength(0), gameManager.roomMap.GetLength(1)));
+        gameManager.uiManager.FlipMiniMapRoom(gameManager.roomMap[StartPoint.x, StartPoint.y]);
+        gameManager.uiManager.noticePlayer(0, StartPoint);
     }
 
     bool MapIsFullyAccessible(bool[,] obstacleMap, int currentObstacleCount, Coord Start)
@@ -431,8 +440,20 @@ public class MapGenerator : MonoBehaviour
         return randomCoord;
     }
 
-    Vector3 CoordToVector(int x, int y)
-    {
-        return StartPosition + new Vector3(TileSize.x * x, 0, -TileSize.z * y);
+    public void flipAllMiniMap(){
+        foreach(Room room in gameManager.roomMap){
+            if(room != null)
+                gameManager.uiManager.FlipMiniMapRoom(room);
+        }
+    }
+
+    public void filpMiniMap(int x, int y){
+        if( gameManager.roomMap.GetLength(0) > x && x >= 0 && gameManager.roomMap.GetLength(1) > y && y >= 0 && gameManager.roomMap[x, y] != null){
+            gameManager.uiManager.FlipMiniMapRoom(gameManager.roomMap[x, y]);
+        }
+    }
+
+    public Coord TestVectorToCoord(Vector3 temp) {
+        return gameManager.VectorToCoord(temp);
     }
 }

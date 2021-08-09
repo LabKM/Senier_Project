@@ -22,11 +22,6 @@ public class Bean : LivingEntity
         //behavior = null;
     }
 
-    void Update()
-    {
-        UpdateMovement();
-    }
-
     public void UpdateMovement()
     {
         Vector3 move_vector_normal = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));

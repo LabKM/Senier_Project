@@ -5,43 +5,88 @@ using UnityEngine.UI;
 
 public class GameSceneUIManager : MonoBehaviour
 {
+    public static GameSceneUIManager Instance{get; private set; }
     bool isInputable;
-    public GameObject MapUI;
-    public GameObject MissionUI;
-    public GameObject MissionUI_List;
+    public MapUImanager mapUI;
+    public ItemUImanager itemUI;
     Vector3 MissionUI_List_Position;
+    Transform[,] miniRoom;
+    public GameObject Prefab_Room;
+
+    public Option option;
 
     void Awake(){
         isInputable = true;
+        if(GameSceneUIManager.Instance != null && GameSceneUIManager.Instance != this){
+            DestroyImmediate(GameSceneUIManager.Instance);
+        }
+        Instance = this;
+    }
+
+    string NameOfRoom(int x, int y){
+        return "Room_" + x.ToString() + "_" + y.ToString();
+    }
+
+    public void CreateMiniMapByRoom(Vector2Int widthHeight){
+        bool nowMapState = mapUI.nowVisible;
+        mapUI.Visible();
+        mapUI.RecreateMapHolder();
+        Transform roomHolder = mapUI.MapHolder;
+        miniRoom = new Transform[widthHeight.x, widthHeight.y];
+
+        Rect size_rect = Prefab_Room.GetComponent<RectTransform>().rect; 
+        Vector3 StartPoint = Vector3.left * (widthHeight.x - 1) * size_rect.width / 2 + Vector3.up * (widthHeight.y - 1)* size_rect.height / 2;
+
+        for(int i = 0; i < widthHeight.x; ++i)
+            for(int j = 0; j < widthHeight.y; ++j){
+                miniRoom[i,j] = Instantiate<GameObject>(Prefab_Room, Vector3.zero, Quaternion.identity, roomHolder).transform;
+                RectTransform rT = miniRoom[i,j].GetComponent<RectTransform>();
+                rT.localPosition = StartPoint + Vector3.right * i * rT.rect.width + Vector3.down * j * rT.rect.height;
+                rT.name = NameOfRoom(i, j);
+            }
+        if(nowMapState)
+            mapUI.Visible();
+        else
+            mapUI.Invisible();
+    }
+
+    public void FlipMiniMapRoom(Room room){
+        Vector2Int rc = room.section;
+        Transform mRoom = miniRoom[rc.x, rc.y];
+        Image image = mRoom.GetComponent<Image>();
+        image.sprite = Resources.Load<Sprite>("UI/Ingame/Map2/Room/Room" + (room.hallway ? "1" : "0") + ((int)room.style).ToString());
+        mRoom.localRotation = Quaternion.Euler(0, 0, -room.minimap_rotation);
+    }
+
+    public void noticePlayer(int playerId, Vector2Int rc){
+        if(playerId >= 4 || playerId < 0){
+            Debug.Log("UI:PLlayer Icon:Player ID::player id is wrong");
+        }
+        Transform aRoom = miniRoom[rc.x, rc.y];
+        Transform playerIcon =  mapUI.PlayerIcon;
+        playerIcon.position = aRoom.position;
+        if(!mapUI.nowVisible){ // 미니맵 상태일 때
+            mapUI.Rooms.localPosition = mapUI.PlayerIcon.localPosition / -2; 
+        }
+    }
+
+    public void noticeGuard(int guardId, Vector2Int rc){
+        
     }
 
     void Update(){
         if(isInputable){
-            if(MissionUI_List != null && Input.GetKeyDown(KeyCode.Tab)){
-                RectTransform rectTransform = MissionUI_List.GetComponent<RectTransform>();
-                MissionUI_List_Position = rectTransform.localPosition;
-                rectTransform.localPosition = Vector3.zero;
-            }else if(Input.GetKeyUp(KeyCode.Tab)){
-                RectTransform rectTransform = MissionUI_List.GetComponent<RectTransform>();
-                rectTransform.localPosition = MissionUI_List_Position;
-            }
+            // if(MissionUI_List != null && Input.GetKeyDown(KeyCode.Tab)){
+            //     RectTransform rectTransform = MissionUI_List.GetComponent<RectTransform>();
+            //     MissionUI_List_Position = rectTransform.localPosition;
+            //     rectTransform.localPosition = Vector3.zero;
+            // }else if(Input.GetKeyUp(KeyCode.Tab)){
+            //     RectTransform rectTransform = MissionUI_List.GetComponent<RectTransform>();
+            //     rectTransform.localPosition = MissionUI_List_Position;
+            // }
             if(Input.GetKeyDown(KeyCode.M)){
-                MapUI.SetActive(!MapUI.activeSelf); 
-            }
-            float wheelInput = Input.GetAxis("Mouse ScrollWheel");
-            if(MapUI.activeSelf && wheelInput != 0){
-                if(wheelInput > 0){
-                    MapUI.transform.Find("Floor1").gameObject.SetActive(true);
-                    MapUI.transform.Find("Floor2").gameObject.SetActive(false);
-                }else{
-                    MapUI.transform.Find("Floor1").gameObject.SetActive(false);
-                    MapUI.transform.Find("Floor2").gameObject.SetActive(true);
-                }
+                mapUI.OnButton();
             }
         }
-    }
-
-    void ChangeMap(){
-
     }
 }

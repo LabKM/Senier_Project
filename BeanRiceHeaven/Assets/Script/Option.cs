@@ -42,7 +42,8 @@ public class Option : MonoBehaviour {
         {
             Time.timeScale = 0;
             player.isInputable = false;
-            pausePanel.SetActive(true);
+            MouseLocker.ShowMouse();
+            //pausePanel.SetActive(true);
         }
         else
         {
@@ -54,8 +55,9 @@ public class Option : MonoBehaviour {
         isPause = true;
         Time.timeScale = 1;
         player.isInputable = true;
-        resultPanel.SetActive(false);
-        pausePanel.SetActive(false);
+        MouseLocker.HideMouse();
+        //resultPanel.SetActive(false);
+        //pausePanel.SetActive(false);
     }
     public void Retry()
     {

@@ -1,12 +1,42 @@
 fileFormatVersion: 2
-guid: d55bee6c3d91fba4ca3d6d85ecf95fba
+guid: 5fcea264a96ecd14c95d8e0d823597fa
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -1490953299021064086
+    second: ItemBlock_0
+  - first:
+      213: 8492270044351011761
+    second: ItemBlock_1
+  - first:
+      213: 4445296062109385117
+    second: ItemBlock_2
+  - first:
+      213: -3912357801086113270
+    second: ItemBlock_3
+  - first:
+      213: 7249696454700153729
+    second: ItemBlock_4
+  - first:
+      213: -1432917635743915143
+    second: ItemBlock_5
+  - first:
+      213: -7547264274205071038
+    second: ItemBlock_6
+  - first:
+      213: 4887551605078959984
+    second: ItemBlock_7
+  - first:
+      213: -7781770328859625294
+    second: ItemBlock_8
+  - first:
+      213: -7361507112907957032
+    second: ItemBlock_9
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     sRGBTexture: 1
     linearTexture: 0
     fadeOut: 0
@@ -35,13 +65,13 @@ TextureImporter:
     filterMode: -1
     aniso: -1
     mipBias: -100
-    wrapU: -1
-    wrapV: -1
+    wrapU: 1
+    wrapV: 1
     wrapW: -1
-  nPOTScale: 1
+  nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 0
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -50,9 +80,9 @@ TextureImporter:
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
-  alphaIsTransparency: 0
+  alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 0
+  textureType: 8
   textureShape: 1
   singleChannelComponent: 0
   flipbookRows: 1
@@ -75,13 +105,67 @@ TextureImporter:
     overridden: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: ItemBlock_0
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 904
+        width: 282
+        height: 153
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a68172bbfd11f4be0800000000000000
+      internalID: -1490953299021064086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ItemBlock_9
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 51
+        width: 218
+        height: 155
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8dc1c93a84ca6d990800000000000000
+      internalID: -7361507112907957032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
