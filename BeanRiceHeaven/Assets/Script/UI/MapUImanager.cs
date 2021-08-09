@@ -4,16 +4,24 @@ using UnityEngine;
 
 public class MapUImanager : MonoBehaviour
 {
-    bool nowVisible;
+    public bool nowVisible{ get; private set; }
     Transform holder;
     public Transform MapHolder{ get{  
         if(holder == null)
-            holder = transform.Find("Rooms").Find("Room");
+            holder = Rooms.Find("Room");
         return holder; 
         } 
     }
+    public Transform PlayerIcon{ get{
+        return MapIcon.Find("Player Icon").GetChild(0);
+        }
+    }
+
     public Transform MapIcon;
     public Transform Background;
+    public Transform Rooms;
+    public Transform MiniMap;
+    public Transform MiniMapMask;
 
     Transform[,] minimap_Rooms;
 
@@ -27,30 +35,34 @@ public class MapUImanager : MonoBehaviour
         }
         
         holder = new GameObject("Room").transform;
-        holder.parent = transform.Find("Rooms");
+        holder.parent = Rooms;
         holder.localPosition = Vector3.zero;
-        holder.gameObject.SetActive(nowVisible);
     }
 
     public void OnButton(){
         if(nowVisible)
             Invisible();
         else
-            visible();
+            Visible();
     }
 
     public void Invisible(){
         nowVisible = false;
-        MapHolder.gameObject.SetActive(nowVisible);
-        MapIcon.gameObject.SetActive(nowVisible);
         Background.gameObject.SetActive(nowVisible);
+        MiniMap.gameObject.SetActive(!nowVisible);
+
+        Rooms.parent = MiniMapMask;
+        Rooms.localPosition = PlayerIcon.localPosition / -2; // 임시 미니맵 중심을 플레이어로 바꾸어야 함
+        Rooms.localScale = Vector3.one / 2;
     }
 
-    public void visible(){
+    public void Visible(){
         nowVisible = true;
-        MapHolder.gameObject.SetActive(nowVisible);
-        MapIcon.gameObject.SetActive(nowVisible);
         Background.gameObject.SetActive(nowVisible);
-    }
+        MiniMap.gameObject.SetActive(!nowVisible);
 
+        Rooms.parent = transform;
+        Rooms.localPosition = Vector3.zero; 
+        Rooms.localScale = Vector3.one;
+    }
 }

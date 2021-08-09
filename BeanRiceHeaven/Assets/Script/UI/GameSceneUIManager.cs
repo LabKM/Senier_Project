@@ -28,6 +28,8 @@ public class GameSceneUIManager : MonoBehaviour
     }
 
     public void CreateMiniMapByRoom(Vector2Int widthHeight){
+        bool nowMapState = mapUI.nowVisible;
+        mapUI.Visible();
         mapUI.RecreateMapHolder();
         Transform roomHolder = mapUI.MapHolder;
         miniRoom = new Transform[widthHeight.x, widthHeight.y];
@@ -42,6 +44,10 @@ public class GameSceneUIManager : MonoBehaviour
                 rT.localPosition = StartPoint + Vector3.right * i * rT.rect.width + Vector3.down * j * rT.rect.height;
                 rT.name = NameOfRoom(i, j);
             }
+        if(nowMapState)
+            mapUI.Visible();
+        else
+            mapUI.Invisible();
     }
 
     public void FlipMiniMapRoom(Room room){
@@ -57,8 +63,11 @@ public class GameSceneUIManager : MonoBehaviour
             Debug.Log("UI:PLlayer Icon:Player ID::player id is wrong");
         }
         Transform aRoom = miniRoom[rc.x, rc.y];
-        Transform playerIcon =  mapUI.MapIcon.Find("Player Icon").GetChild(playerId);
+        Transform playerIcon =  mapUI.PlayerIcon;
         playerIcon.position = aRoom.position;
+        if(!mapUI.nowVisible){ // 미니맵 상태일 때
+            mapUI.Rooms.localPosition = mapUI.PlayerIcon.localPosition / -2; 
+        }
     }
 
     public void noticeGuard(int guardId, Vector2Int rc){

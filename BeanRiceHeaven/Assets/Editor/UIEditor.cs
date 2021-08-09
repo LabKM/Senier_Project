@@ -21,5 +21,8 @@ public class UIEditor : Editor
         {
             ui.itemUI.PutItemUI();
         }
+        if(GUILayout.Button("Swap Map")){
+            ui.mapUI.OnButton();
+        }
     }
 }
