@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LiftableObject : MonoBehaviour, ILiftable
+public class LiftableObject : MonoBehaviour, IInteractable
 {
     public Material Outline;
     public Transform liftedPoint;
@@ -12,7 +12,7 @@ public class LiftableObject : MonoBehaviour, ILiftable
     protected bool onHand;
     List<Collider> colliders;
     private Transform original_parent;
-    public virtual void LeftShift(Transform _transform)
+    public virtual void Interact(Transform _transform)
     { 
         onHand = !onHand;
         if (onHand)
@@ -27,6 +27,7 @@ public class LiftableObject : MonoBehaviour, ILiftable
             transform.parent = original_parent;
         }
         Vector3 offset = transform.position - liftedPoint.position;
+        transform.localRotation = Quaternion.identity;
         transform.position = _transform.position + offset;
     }
 
@@ -80,14 +81,14 @@ public class LiftableObject : MonoBehaviour, ILiftable
         onHand = false;
     }
 
-    protected void PhysicsOff(){
+    public void PhysicsOff(){
         colliders[0].enabled = false;
         colliders[1].enabled = false;
         my_rigidbody.isKinematic = true;
         my_rigidbody.Sleep();
     }
 
-    protected void PhysicsOn(){
+    public void PhysicsOn(){
         colliders[0].enabled = true;
         colliders[1].enabled = true;
         my_rigidbody.WakeUp();

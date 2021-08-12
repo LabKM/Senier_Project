@@ -29,7 +29,7 @@ public class Inventory : MonoBehaviour
             return null;
         }
     } }
-    public int MaxItem;
+    public int MaxItem{ get; set; }
 
     public Inventory(BeanController _owner, Transform _up, Transform _down){
         owner = _owner;
@@ -44,6 +44,7 @@ public class Inventory : MonoBehaviour
     public void OnCloseObejct(LiftableObject liftable){
         if(itemsOutOfPocket.IndexOf(liftable) < 0){
             itemsOutOfPocket.Add(liftable);
+            GameSceneUIManager.Instance.interactionUImanager.AddInteraction(InteractionUImanager.Interaction.Use);
             if(nowItemOut == liftable){
                 ChagneChosenItem(0);
             }
@@ -53,9 +54,11 @@ public class Inventory : MonoBehaviour
     public void ChagneChosenItem(int delta){
         if(itemsOutOfPocket.Count > 0){
             nowItemOut.OffEffectOfOutline();
-            Debug.Log("Change chosen item : " + nowChosenItem.ToString() + " + " + delta.ToString()
-             + " % " + itemsOutOfPocket.Count.ToString() + " = " + (Mathf.Abs(nowChosenItem + delta) % itemsOutOfPocket.Count).ToString());
+            // Debug.Log("Change chosen item : " + nowChosenItem.ToString() + " + " + delta.ToString()
+            //  + " % " + itemsOutOfPocket.Count.ToString() + " = " + (Mathf.Abs(nowChosenItem + delta) % itemsOutOfPocket.Count).ToString());
+            int lastChosenItem = nowChosenItem;
             nowChosenItem = Mathf.Abs(nowChosenItem + delta) % itemsOutOfPocket.Count;
+            GameSceneUIManager.Instance.interactionUImanager.Change(nowChosenItem - lastChosenItem);
             nowItemOut.OnEffectOfOutline();
         }
     }
@@ -66,6 +69,7 @@ public class Inventory : MonoBehaviour
                 nowChosenItem = 0;
                 nowItemOut.OnEffectOfOutline();
             }
+            GameSceneUIManager.Instance.interactionUImanager.RemoveInteraction();
             liftable.OffEffectOfOutline();
         }
         Debug.Log("Remove item to out of pocket list");
@@ -101,16 +105,31 @@ public class Inventory : MonoBehaviour
             owner.hand = true;
             handItem = target;
         }
-        target.LeftShift(liftUp);
+        target.Interact(liftUp);
     }
 
     public void UseItem(int target){
-        
+        if(target >= 0 && itemInPocket.Count > target){
+            switch(itemInPocket[target].type){
+                case ItemObject.HandItem.Cloth:
+                    break;
+                case ItemObject.HandItem.Guardtracker:     
+                    break;
+                case ItemObject.HandItem.Healkit:
+                    break;
+                case ItemObject.HandItem.Key:
+                    break;
+                case ItemObject.HandItem.Speedup:
+                    break;
+                case ItemObject.HandItem.Treasuretracker:
+                    break;
+            }
+        }
     }
 
     public void PutPocketItem(int target){
         if(target >= 0 && itemInPocket.Count > target){
-            itemInPocket[target].LeftShift(liftDown);
+            itemInPocket[target].Interact(liftDown);
             itemInPocket.RemoveAt(target);
         }
     }
@@ -118,7 +137,7 @@ public class Inventory : MonoBehaviour
     public void PutHandItem(){
         if(handItem){
             owner.hand = false;
-            handItem.LeftShift(liftDown);
+            handItem.Interact(liftDown);
             handItem = null;
             isTreasure = false;
         }        

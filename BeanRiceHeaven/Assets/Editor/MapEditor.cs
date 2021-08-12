@@ -16,12 +16,12 @@ public class MapEditor : Editor
         {
             map.GenerateMap();
         }
-        rc = EditorGUILayout.Vector2IntField("Row & Column", rc);
-        if(GUILayout.Button("FlipMiniMap")){
-            map.filpMiniMap(rc.x, rc.y);
-        }
-        if(GUILayout.Button("FlipMiniMapAll")){
-            map.flipAllMiniMap();
-        }
+        // rc = EditorGUILayout.Vector2IntField("Row & Column", rc);
+        // if(GUILayout.Button("FlipMiniMap")){
+        //     map.filpMiniMap(rc.x, rc.y);
+        // }
+        // if(GUILayout.Button("FlipMiniMapAll")){
+        //     map.flipAllMiniMap();
+        // }
     }
 }

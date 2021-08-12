@@ -9,6 +9,7 @@ public class GameSceneUIManager : MonoBehaviour
     bool isInputable;
     public MapUImanager mapUI;
     public ItemUImanager itemUI;
+    public InteractionUImanager interactionUImanager;
     Vector3 MissionUI_List_Position;
     Transform[,] miniRoom;
     public GameObject Prefab_Room;
