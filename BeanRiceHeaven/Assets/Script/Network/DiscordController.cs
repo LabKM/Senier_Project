@@ -102,7 +102,7 @@ namespace Script.Network
             
             activityManager.UpdateActivity(activity, result =>
             {
-               //Debug.Log("Discord Result: " + result);
+               // Debug.Log("Discord Result: " + result);
             });
         }
 

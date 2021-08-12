@@ -31,7 +31,6 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
 
     [Header("- Lobby Panel")] 
     public GameObject lobbyPanel;
-    public GameObject joinButton;
     public InputField nickNameInputField;
     
     [Header("- Inside Room Panel")] 
@@ -48,9 +47,6 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        if (!joinButton)
-            throw new Exception("Public Objects Link Error !!!");
-
         if (!instance)
         {
             instance = this;
@@ -70,16 +66,13 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (!joinButton)
-            return;
-
         if (nickNameInputField.text.Length == 0)
         {
-            joinButton.GetComponent<Button>().interactable = false;
+            return;
         }
-        else if (PhotonNetwork.IsConnected && PhotonNetwork.InLobby)
+        else if (Input.GetKeyDown(KeyCode.Return) && PhotonNetwork.IsConnected && PhotonNetwork.InLobby)
         {
-            joinButton.GetComponent<Button>().interactable = true;
+            //OnJoinButtonClicked();
         }
     }
     
