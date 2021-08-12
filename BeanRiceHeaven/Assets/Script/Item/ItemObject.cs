@@ -11,7 +11,7 @@ public class ItemObject : LiftableObject
     HandItem Type;
     public HandItem type{ get{ return Type; } }
 
-    public override void LeftShift(Transform _transform){
+    public override void Interact(Transform _transform){
         onHand = !onHand;
         if(onHand){
             base.PhysicsOff();
