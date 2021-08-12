@@ -30,7 +30,7 @@ public class InsideRoomPlayerInfo : MonoBehaviour
         if (PhotonNetwork.LocalPlayer.ActorNumber != _clientID)
         {
             playerReadyButton.gameObject.SetActive(false);
-            playerNickName.color = new Color32(176, 59, 69, 255);
+            // playerNickName.color = new Color32(176, 59, 69, 255);
         }
         Hashtable playerStatus = new Hashtable() {{"ReadyStatus", _isPlayerReady}};
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerStatus);
@@ -44,7 +44,7 @@ public class InsideRoomPlayerInfo : MonoBehaviour
         if (PhotonNetwork.LocalPlayer.ActorNumber != _clientID)
         {
             playerReadyButton.gameObject.SetActive(false);
-            playerNickName.color = new Color32(176, 59, 69, 255);
+            // playerNickName.color = new Color32(176, 59, 69, 255);
         }
         Hashtable playerStatus = new Hashtable() {{"ReadyStatus", _isPlayerReady}};
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerStatus);
@@ -68,9 +68,9 @@ public class InsideRoomPlayerInfo : MonoBehaviour
         _isPlayerReady = isPlayerReady;
         playerReadyText.text = _isPlayerReady ? "Ready" : "Not Ready";
         
-        Color32 readyColor = new Color32(66, 236, 41, 255);
-        Color32 notReadyColor = new Color32(219, 219, 219, 200);
-        playerReadyText.color = _isPlayerReady ? readyColor : notReadyColor;
+        //Color32 readyColor = new Color32(66, 236, 41, 255);
+        //Color32 notReadyColor = new Color32(219, 219, 219, 200);
+        //playerReadyText.color = _isPlayerReady ? readyColor : notReadyColor;
     }
 
     public void PressReadyButton()

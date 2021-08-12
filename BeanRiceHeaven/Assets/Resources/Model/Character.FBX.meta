@@ -94,8 +94,8 @@ ModelImporter:
       name: SitDown1
       takeName: Character
       internalID: 0
-      firstFrame: 795
-      lastFrame: 849
+      firstFrame: 796
+      lastFrame: 848
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -118,13 +118,13 @@ ModelImporter:
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
+      additiveReferencePoseFrame: 0.5
     - serializedVersion: 16
       name: SitDown2
       takeName: Character
       internalID: 0
-      firstFrame: 860
-      lastFrame: 920
+      firstFrame: 861
+      lastFrame: 919
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -153,7 +153,7 @@ ModelImporter:
       takeName: Character
       internalID: 0
       firstFrame: 930
-      lastFrame: 970
+      lastFrame: 969
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
