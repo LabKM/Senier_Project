@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LobbyPanelAnimation : MonoBehaviour
 {
@@ -25,6 +26,12 @@ public class LobbyPanelAnimation : MonoBehaviour
                 return;
             }
             _animator.SetBool("IsKeyDown", true);
+        }
+
+        if (_animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.Nickname Entered Animation") &&
+            _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.999f)
+        {
+            SceneManager.LoadScene("GeneratedMap");
         }
     }
 }
