@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Guard : LivingEntity
 {
     BeanController target;
-    UnityEngine.AI.NavMeshAgent m_Agent;
+    NavMeshAgent m_Agent;
     Behavior action;
     Animator animator;
 
@@ -24,7 +25,7 @@ public class Guard : LivingEntity
     }
 
     public void Spawn(){
-        m_Agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        m_Agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         target = GameObject.FindWithTag("Player").GetComponent<BeanController>();
         action = new Behavior(trace);

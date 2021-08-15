@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEditor.AI;
 
 using Coord = UnityEngine.Vector2Int;
 
@@ -253,21 +255,21 @@ public class MapGenerator : MonoBehaviour
         // 목표 방 위치 결정 가장 깊은 방으로 설정함
         if(NumOfRoom > 0){
             NumOfRoom--;
-            Coord randomCoord = GetDeepestRoom(unassessableFlag, StartPoint); 
-            Vector3 roomPos = gameManager.CoordToVector(randomCoord.x, randomCoord.y);
-            gameManager.roomMap[randomCoord.x, randomCoord.y] = Instantiate<GameObject>(RoomPrefab, roomPos, Quaternion.identity).GetComponent<Room>();
-            Coord wayCenter = randomCoord * 2 + new Vector2Int(1, 1);
-            gameManager.roomMap[randomCoord.x, randomCoord.y].hallway = false;
-            gameManager.roomMap[randomCoord.x, randomCoord.y].goalPoint = true;
-            gameManager.roomMap[randomCoord.x, randomCoord.y].section = randomCoord;
-            gameManager.roomMap[randomCoord.x, randomCoord.y].SetDoorStyle(
+            Coord deepestRoom = GetDeepestRoom(unassessableFlag, StartPoint); 
+            Vector3 roomPos = gameManager.CoordToVector(deepestRoom.x, deepestRoom.y);
+            gameManager.roomMap[deepestRoom.x, deepestRoom.y] = Instantiate<GameObject>(RoomPrefab, roomPos, Quaternion.identity).GetComponent<Room>();
+            Coord wayCenter = deepestRoom * 2 + new Vector2Int(1, 1);
+            gameManager.roomMap[deepestRoom.x, deepestRoom.y].hallway = false;
+            gameManager.roomMap[deepestRoom.x, deepestRoom.y].goalPoint = true;
+            gameManager.roomMap[deepestRoom.x, deepestRoom.y].section = deepestRoom;
+            gameManager.roomMap[deepestRoom.x, deepestRoom.y].SetDoorStyle(
                 !unassessableFlag[wayCenter.x + 1, wayCenter.y], 
                 !unassessableFlag[wayCenter.x - 1, wayCenter.y],
                 !unassessableFlag[wayCenter.x, wayCenter.y + 1],
                 !unassessableFlag[wayCenter.x, wayCenter.y - 1]);
-            gameManager.roomMap[randomCoord.x, randomCoord.y].transform.parent = MapHolder.transform;
-            gameManager.roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y);
-            gm.GoalPoint = randomCoord;
+            gameManager.roomMap[deepestRoom.x, deepestRoom.y].transform.parent = MapHolder.transform;
+            gameManager.roomMap[deepestRoom.x, deepestRoom.y].transform.name = MapUtility.getRoomName(deepestRoom.x, deepestRoom.y);
+            gm.GoalPoint = deepestRoom;
         }
 
 
@@ -318,6 +320,18 @@ public class MapGenerator : MonoBehaviour
                 }
             }
         } // Floor
+
+    
+        // 바닥 베이크
+    #if UNITY_EDITOR
+        UnityEngine.Object[] list = new UnityEngine.Object[1];
+        list[0] = this.GetComponent<NavMeshSurface>();
+        NavMeshAssetManager.instance.StartBakingSurfaces(list);
+    #else
+        GetComponent<NavMeshSurface>().RemoveData();    
+        GetComponent<NavMeshSurface>().BuildNavMesh();    
+    #endif
+
         // 문 생성
         Door2[,] doors_h = new Door2[wholeMapSize.x - 1, wholeMapSize.y];
         Door2[,] doors_v = new Door2[wholeMapSize.x, wholeMapSize.y - 1];

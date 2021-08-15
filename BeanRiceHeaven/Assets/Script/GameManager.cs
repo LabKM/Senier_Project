@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
+using UnityEditor.AI;
 
 using Coord = UnityEngine.Vector2Int;
 
@@ -25,6 +27,8 @@ public class GameManager : MonoBehaviour
     public float limitTime = 900;
 
     private Coord lastNowRoomCoord;
+
+    NavMeshSurface surface;
 
     void Awake()
     {
