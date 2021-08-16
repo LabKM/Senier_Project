@@ -201,6 +201,25 @@ public class MapGenerator : MonoBehaviour
         return DeepestRoom;
     }
 
+    public void GetMap(){
+        gameManager = GetComponent<GameManager>();
+        gameManager.TileSize = new Vector3(3.556f, 0, 3.556f);
+
+        gameManager.StartPosition = new Vector3(-wholeMapSize.x / 2 * gameManager.TileSize.x, 0, wholeMapSize.y / 2 * gameManager.TileSize.z);   
+        gameManager.roomMap = new Room[wholeMapSize.x, wholeMapSize.y];     
+
+        GameObject MapHolder = transform.Find(holderName).gameObject;
+        Room[] tempRooms = MapHolder.transform.GetComponentsInChildren<Room>(); 
+        foreach(var room in tempRooms){
+             string[] nameSet = room.transform.name.Split('_');
+             int i = Int32.Parse(nameSet[1]) - 1, j = Int32.Parse(nameSet[2]) - 1;
+             gameManager.roomMap[i, j] = room;
+        }
+        gameManager.uiManager.CreateMiniMapByRoom(new Coord(gameManager.roomMap.GetLength(0), gameManager.roomMap.GetLength(1)));
+        gameManager.uiManager.FlipMiniMapRoom(gameManager.roomMap[gameManager.StartPoint.x, gameManager.StartPoint.y]);
+        gameManager.uiManager.noticePlayer(0, gameManager.StartPoint);
+    }
+
     public void GenerateMap() // 
     {
         gameManager = GetComponent<GameManager>();
@@ -230,8 +249,6 @@ public class MapGenerator : MonoBehaviour
         bool[,] unassessableFlag = new bool[wholeMapSize.x * 2 + 1, wholeMapSize.y * 2 + 1];;
         SetFlagMap(StartPoint, unassessableFlag);
 
-        GameManager gm = transform.GetComponent<GameManager>();
-
         // 방의 형태 기반으로 3칸씩 읽어서 구현
         // 시작 위치 결정 랜덤한 위치 하나 골라서 
         if(NumOfRoom > 0){
@@ -249,8 +266,8 @@ public class MapGenerator : MonoBehaviour
                 !unassessableFlag[wayCenter.x, wayCenter.y + 1],
                 !unassessableFlag[wayCenter.x, wayCenter.y - 1]);
             gameManager.roomMap[randomCoord.x, randomCoord.y].transform.parent = MapHolder.transform;
-            gameManager.roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y);
-            gm.StartPoint = randomCoord;
+            gameManager.roomMap[randomCoord.x, randomCoord.y].transform.name = MapUtility.getRoomName(randomCoord.x, randomCoord.y) + "_Start";
+            gameManager.StartPoint = randomCoord;
         }
         // 목표 방 위치 결정 가장 깊은 방으로 설정함
         if(NumOfRoom > 0){
@@ -268,10 +285,9 @@ public class MapGenerator : MonoBehaviour
                 !unassessableFlag[wayCenter.x, wayCenter.y + 1],
                 !unassessableFlag[wayCenter.x, wayCenter.y - 1]);
             gameManager.roomMap[deepestRoom.x, deepestRoom.y].transform.parent = MapHolder.transform;
-            gameManager.roomMap[deepestRoom.x, deepestRoom.y].transform.name = MapUtility.getRoomName(deepestRoom.x, deepestRoom.y);
-            gm.GoalPoint = deepestRoom;
+            gameManager.roomMap[deepestRoom.x, deepestRoom.y].transform.name = MapUtility.getRoomName(deepestRoom.x, deepestRoom.y) + "_Goal";
+            gameManager.GoalPoint = deepestRoom;
         }
-
 
         // 방 생성
         for(int  i = 0; i < NumOfRoom; ++i){
@@ -328,8 +344,8 @@ public class MapGenerator : MonoBehaviour
         list[0] = this.GetComponent<NavMeshSurface>();
         NavMeshAssetManager.instance.StartBakingSurfaces(list);
     #else
-        GetComponent<NavMeshSurface>().RemoveData();    
-        GetComponent<NavMeshSurface>().BuildNavMesh();    
+        // GetComponent<NavMeshSurface>().RemoveData();    
+        // GetComponent<NavMeshSurface>().BuildNavMesh();    
     #endif
 
         // 문 생성

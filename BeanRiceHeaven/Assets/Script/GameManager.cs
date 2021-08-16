@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
         hpList = new List<LivingEntity>();
         MapGenerator map = GetComponent<MapGenerator>();
         map.gameManager = this;
-        //map.GenerateMap();
+        map.GetMap();
         if(GameManager.Instance != null && GameManager.Instance != this){
             DestroyImmediate(GameManager.Instance);    
         }

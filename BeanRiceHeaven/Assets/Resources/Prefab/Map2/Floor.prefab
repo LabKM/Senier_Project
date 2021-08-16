@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79189c8c469974b4fb05e946da039b19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  section: {x: 0, y: 0}
   doors: []
 --- !u!64 &8030708827604254524
 MeshCollider:
