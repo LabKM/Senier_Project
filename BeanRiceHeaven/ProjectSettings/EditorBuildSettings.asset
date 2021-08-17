@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/Scenes/LobbyScene.unity
     guid: 4b6ab7897b37c3443925aa7273732989
   - enabled: 1
+    path: Assets/Scenes/LoadingScene.unity
+    guid: 9ba5a4be67d8f4e409601308a2a7b2f7
+  - enabled: 1
     path: Assets/Scenes/GeneratedMap.unity
     guid: ba59f423219d16e439f3353268c751df
+  - enabled: 1
+    path: Assets/Scenes/EndingScene.unity
+    guid: 5660d9383de36114aaafce83e8fa0535
   m_configObjects: {}

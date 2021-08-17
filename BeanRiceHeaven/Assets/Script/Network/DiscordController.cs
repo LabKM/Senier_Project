@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
 using Discord;
 using Photon.Pun;
 using UnityEngine;
@@ -16,7 +18,10 @@ namespace Script.Network
         private static string _version { get { return Application.unityVersion; } }
         private static string _projectName { get { return Application.productName; } }
         private static string _activeSceneName { get { return SceneManager.GetActiveScene().name; } }
-        private static long _lastTimestamp;
+        private static long _lastTimeStamp;
+        
+        private List<Relationship> _relationships;
+        private float timer = 0.0f;
 
         void Awake()
         {
@@ -30,20 +35,88 @@ namespace Script.Network
             }
             DontDestroyOnLoad(this);
             
-            discord = new Discord.Discord(long.Parse(_applicationId), (System.UInt64)Discord.CreateFlags.Default);
+            SetupDiscord();
 
-            var activityManager = discord.GetActivityManager();
-            var activity = new Discord.Activity
+        }
+
+        void Update()
+        {
+            discord.RunCallbacks();
+            timer += Time.deltaTime;
+            if (timer > 2.0f)
             {
-                Details = _projectName,
-                State = "접속 중",
-                Assets =
-                {
-                    LargeImage = "kongbab_test_image1",
-                    LargeText = _version,
-                    SmallImage = "kongbab_test_image2",
-                    SmallText = "It's me! SmallText!"
-                }
+                timer -= 2.0f;
+                UpdateActivity();
+            }
+        }
+
+        private void SetupDiscord()
+        {
+            discord = new Discord.Discord(long.Parse(_applicationId), (System.UInt64)Discord.CreateFlags.Default);
+            _lastTimeStamp = GetTimestamp();
+
+            var relationshipManager = discord.GetRelationshipManager();
+            _relationships = new List<Relationship>();
+            
+            var activityManager = discord.GetActivityManager();
+            LobbyManager lobbyManager = discord.GetLobbyManager();
+
+            var activity = new Activity();
+            
+            activityManager.OnActivityJoin += secret =>
+            {
+                Debug.Log("OnJoin " + secret);
+                
+                
+                lobbyManager.ConnectLobbyWithActivitySecret(secret,
+                    (Discord.Result result, ref Discord.Lobby lobby) =>
+                    {
+                        Debug.Log("Connected to lobby: " + lobby.Id);
+                        
+                        lobbyManager.ConnectVoice(lobby.Id, (Discord.Result voiceResult) => {
+
+                            if (voiceResult == Discord.Result.Ok) {
+                                Debug.Log("New User Connected to Voice! Say Hello! Result: " + voiceResult);
+                            } else {
+                                Debug.Log("Failed with Result: " + voiceResult);
+                            };
+                        });
+                        
+                       lobbyManager.ConnectNetwork(lobby.Id); 
+                       lobbyManager.OpenNetworkChannel(lobby.Id, 0, true);
+
+                       foreach (var user in lobbyManager.GetMemberUsers(lobby.Id))
+                       {
+                           //Send a hello message to everyone in the lobby
+                           lobbyManager.SendNetworkMessage(lobby.Id, user.Id, 0,
+                               Encoding.UTF8.GetBytes(string.Format("Hello, " + user.Username + "!")));
+                       }
+                       
+                       var activity1 = new Discord.Activity
+                       {
+                           Details = _projectName,
+                           State = "",
+                           Assets =
+                           {
+                               LargeImage = "kongbab_test_image1",
+                           },
+                           Party =
+                           {
+                               Id = lobby.Id.ToString(),
+                               Size = {
+                                   CurrentSize = lobbyManager.MemberCount(lobby.Id),
+                                   MaxSize = (int)lobby.Capacity,
+                               },
+                           },
+                           Secrets =
+                           {
+                               Join = "123",
+                           },
+                           Instance = true,
+                       };
+
+                       activity = activity1;
+                    });
             };
             
             activityManager.UpdateActivity(activity, result =>
@@ -53,12 +126,12 @@ namespace Script.Network
 
         }
 
-        void Update()
+        private long GetTimestamp()
         {
-            discord.RunCallbacks();
-            UpdateActivity();
+            long unixTimeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            return unixTimeStamp;
         }
-
+        
         private void UpdateActivity()
         {
             var activityManager = discord.GetActivityManager();
@@ -66,43 +139,59 @@ namespace Script.Network
             
             string currSceneState = _activeSceneName;
             
-            Activity activity = new Activity
+            var activity = new Discord.Activity
             {
                 Details = _projectName,
                 State = "",
+                Timestamps =
+                {
+                    Start = _lastTimeStamp,
+                },
+                
                 Assets =
                 {
                     LargeImage = "kongbab_test_image1",
-                    LargeText = _version,
-                    SmallImage = "kongbab_test_image2",
-                    SmallText = "It's me! SmallText!"
-                }
+                },
+                
+                Secrets =
+                {
+                    Join = "123",
+                },
+
+                Instance = true,
             };
             
-            if (_activeSceneName.Equals("BackgroundTest"))
+            if (_activeSceneName.Equals("Intro Scene"))
+            {
+                currSceneState = "";
+            }
+            else if (BeanRiceHeavenLobbyManager.Instance.roomPanel && 
+                     BeanRiceHeavenLobbyManager.Instance.roomPanel.activeSelf && PhotonNetwork.InRoom)
+            {
+                currSceneState = "대기 중";
+                
+                activity.Party.Id = "Beans Party";
+                activity.Party.Size.CurrentSize = PhotonNetwork.PlayerList.Length;
+                activity.Party.Size.MaxSize = 4;
+            }
+            else if (_activeSceneName.Equals("LoadingScene"))
+            {
+                currSceneState = "로딩 중";
+            }
+            else if (_activeSceneName.Equals("GeneratedMap"))
             {
                 currSceneState = "게임 중";
             }
-            else if (BeanRiceHeavenLobbyManager.Instance.roomPanel.activeSelf)
+            else if (_activeSceneName.Equals("EndingScene"))
             {
-                currSceneState = "매칭 중";
-                                
-                activity.Party = new PartySize
-               {
-                   CurrentSize = PhotonNetwork.CurrentRoom.PlayerCount,
-                   MaxSize = PhotonNetwork.CurrentRoom.MaxPlayers
-               };
-            }
-            else if (_activeSceneName.Equals("LobbyScene"))
-            {
-                currSceneState = "접속 중";
+                currSceneState = "게임 종료";
             }
             
             activity.State = currSceneState;
             
             activityManager.UpdateActivity(activity, result =>
             {
-               // Debug.Log("Discord Result: " + result);
+                //Debug.Log("Discord Result: " + result + activity.State);
             });
         }
 

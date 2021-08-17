@@ -66,7 +66,7 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (nickNameInputField.text.Length == 0)
+        if (nickNameInputField && nickNameInputField.text.Length == 0)
         {
             return;
         }
@@ -89,7 +89,7 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    public void OnJoinButtonClicked()
+    public void OnRoomJoinButtonClicked()
     {
         if (PhotonNetwork.NetworkClientState != ClientState.JoinedLobby)
             return;
@@ -115,7 +115,7 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
         RoomOptions roomOptions = new RoomOptions() { IsOpen = true, IsVisible = true, MaxPlayers = 4};
         PhotonNetwork.JoinOrCreateRoom("Room" + randomRoomName, roomOptions, TypedLobby.Default);
     }
-    
+/*    
     public override void OnJoinedRoom()
     {
         roomPanel.SetActive(true);
@@ -135,8 +135,8 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
             
             InsideRoomPlayerInfo entryPlayerInfo = roomPlayerPrefabs[i].GetComponent<InsideRoomPlayerInfo>();
             
-            entryPlayerInfo.playerObject.transform.localPosition = new Vector3(entryPlayerInfo.playerObject.transform.localPosition.x,
-                20, entryPlayerInfo.playerObject.transform.localPosition.z);
+            // entryPlayerInfo.playerObject.transform.localPosition = new Vector3(entryPlayerInfo.playerObject.transform.localPosition.x,
+            //     20, entryPlayerInfo.playerObject.transform.localPosition.z);
             
             roomPlayerPrefabs[i].SetActive(true);
 
@@ -193,7 +193,7 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
             if (_insideRoomPlayerEntries.ContainsValue(g))
             {
                 Debug.Log(i + "num Player Joined");
-                continue;
+                continue;fff
             } 
             entryPlayerInfo = roomPlayerPrefabs[i].GetComponent<InsideRoomPlayerInfo>();
             entryPlayerInfo.playerObject.transform.localPosition = new Vector3(entryPlayerInfo.playerObject.transform.localPosition.x,
@@ -234,7 +234,7 @@ public class BeanRiceHeavenLobbyManager : MonoBehaviourPunCallbacks
             }
         }
     }
-
+*/
     #endregion
     
     public void QuitGame()

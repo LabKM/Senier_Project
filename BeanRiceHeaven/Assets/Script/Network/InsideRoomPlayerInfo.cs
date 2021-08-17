@@ -12,12 +12,12 @@ public class InsideRoomPlayerInfo : MonoBehaviour
 {
     [Header("- UI")] 
     public Text playerNickName;
-    public Text playerReadyText;
     public GameObject playerObject;
-    public Button playerReadyButton;
+    public GameObject readyImage;
+    public GameObject notReadyImage;
 
     private int _clientID;
-    private bool _isPlayerReady = false;
+    public bool isReady = false;
     [HideInInspector] public int playerNum;
 
     private void Awake()
@@ -29,13 +29,14 @@ public class InsideRoomPlayerInfo : MonoBehaviour
     {
         if (PhotonNetwork.LocalPlayer.ActorNumber != _clientID)
         {
-            playerReadyButton.gameObject.SetActive(false);
+            //playerReadyButton.gameObject.SetActive(false);
             // playerNickName.color = new Color32(176, 59, 69, 255);
+            return;
         }
-        Hashtable playerStatus = new Hashtable() {{"ReadyStatus", _isPlayerReady}};
+        Hashtable playerStatus = new Hashtable() {{"ReadyStatus", isReady}};
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerStatus);
         
-        playerReadyButton.onClick.AddListener(PressReadyButton);
+        //playerReadyButton.onClick.AddListener(PressReadyButton);
     }
 
     // Start is called before the first frame update
@@ -43,13 +44,12 @@ public class InsideRoomPlayerInfo : MonoBehaviour
     {
         if (PhotonNetwork.LocalPlayer.ActorNumber != _clientID)
         {
-            playerReadyButton.gameObject.SetActive(false);
-            // playerNickName.color = new Color32(176, 59, 69, 255);
+            return;
         }
-        Hashtable playerStatus = new Hashtable() {{"ReadyStatus", _isPlayerReady}};
+        Hashtable playerStatus = new Hashtable() {{"ReadyStatus", isReady}};
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerStatus);
         
-        playerReadyButton.onClick.AddListener(PressReadyButton);
+        //playerReadyButton.onClick.AddListener(PressReadyButton);
     }
     
     private void OnDestroy()
@@ -65,19 +65,25 @@ public class InsideRoomPlayerInfo : MonoBehaviour
 
     public void SetPlayerReady(bool isPlayerReady)
     {
-        _isPlayerReady = isPlayerReady;
-        playerReadyText.text = _isPlayerReady ? "Ready" : "Not Ready";
-        
-        //Color32 readyColor = new Color32(66, 236, 41, 255);
-        //Color32 notReadyColor = new Color32(219, 219, 219, 200);
-        //playerReadyText.color = _isPlayerReady ? readyColor : notReadyColor;
+        Debug.Log(gameObject + " [" + playerNickName.text + "] SetPlayerReady()");
+        isReady = isPlayerReady;
+
+        if (isReady)
+        {
+            readyImage.SetActive(true);
+            notReadyImage.SetActive(false);
+        }
+        else
+        {
+            readyImage.SetActive(false);
+            notReadyImage.SetActive(true);
+        }
     }
 
     public void PressReadyButton()
     {
-        _isPlayerReady = !_isPlayerReady;
-        SetPlayerReady(_isPlayerReady);
-        Hashtable readyStatus = new Hashtable() {{"ReadyStatus", _isPlayerReady}};
+        SetPlayerReady(!isReady);
+        Hashtable readyStatus = new Hashtable() {{"ReadyStatus", isReady}};
         PhotonNetwork.LocalPlayer.SetCustomProperties(readyStatus);
     }
 

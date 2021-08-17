@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 using Coord = UnityEngine.Vector2Int;
@@ -51,6 +52,16 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F12))
+        {
+            SceneManager.LoadScene("EndingScene");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+        
         // 시간 화긴
         limitTime -= Time.deltaTime;
         int limitTime_min = (int)(limitTime / 60);

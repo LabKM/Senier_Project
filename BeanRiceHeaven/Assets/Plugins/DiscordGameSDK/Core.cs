@@ -302,7 +302,7 @@ namespace Discord
 
         public ActivityAssets Assets;
 
-        public PartySize Party;
+        public ActivityParty Party;
 
         public ActivitySecrets Secrets;
 
