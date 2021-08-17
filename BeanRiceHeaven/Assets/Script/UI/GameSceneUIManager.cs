@@ -55,6 +55,7 @@ public class GameSceneUIManager : MonoBehaviour
         Vector2Int rc = room.section;
         Transform mRoom = miniRoom[rc.x, rc.y];
         Image image = mRoom.GetComponent<Image>();
+        Debug.Log((room.hallway ? "1" : "0") + ((int)room.style).ToString());
         image.sprite = Resources.Load<Sprite>("UI/Ingame/Map2/Room/Room" + (room.hallway ? "1" : "0") + ((int)room.style).ToString());
         mRoom.localRotation = Quaternion.Euler(0, 0, -room.minimap_rotation);
     }
